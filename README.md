@@ -1,6 +1,5 @@
 # qm
-Electronic structure model presented in \[[1]\],
-implemented from scratch.
+An implementation from scratch of the electronic structure model presented in \[[1]\].
 
 ---
 
