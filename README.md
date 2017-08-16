@@ -1,4 +1,4 @@
-#qm
+# qm
 Electronic structure model presented in \[[1]\],
 implemented from scratch.
 
