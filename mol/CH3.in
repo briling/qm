@@ -1,0 +1,19 @@
+$system mem=32 disk=-32 $end
+$control
+task=energy
+theory=qm
+basis=./qm_m.in
+$end
+$scf print=3 $end
+
+$molecule
+ mult=2
+ unit=b
+ z-matrix
+   6
+   1    1    2.03213099
+   1    1    2.03213099    2    120.000000
+   1    1    2.03213099    2    120.000000    3    180.000000
+$end
+ Energy =    -39.7429802583
+

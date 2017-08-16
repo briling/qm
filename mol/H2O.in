@@ -1,0 +1,15 @@
+$system mem=64 disk=-256 $end
+$control
+ task=energy
+ theory=qm
+ basis=./qm_m.in
+$end
+$scf print=3 $end
+
+$molecule
+ unit=b
+ cartesian
+   8     0.00000000   0.72359859   0.18423355
+   1     0.00000000  -0.71451213   1.29349077
+   1     0.00000000  -0.00908646  -1.47772432
+$end
