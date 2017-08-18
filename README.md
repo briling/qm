@@ -1,44 +1,50 @@
 # qm
-An implementation from scratch of the electronic structure model presented in \[[1]\].
+An implementation from scratch of the electronic structure model from \[[1]\].
+
+*I will publish the source code when it is polished enough (in a few weeks), 
+but for now there is only the `qm` binary for GNU/Linux (x86_64).
+Sorry!*
 
 ---
 
-## requirements:
+## requirements
 * `GNU/Linux` or `Cygwin`
 * `make`
 * `gcc`
 
-## build:
+## build
 ```
 make qm
 ```
 
-## usage:
+## usage
 ```
 ./qm qm_m.in <molecule>.{in,out}
 ```
 
 ---
 
-## files:
+## files
 
-`qm_m.in`  
-> the file with the set of parameters
+`qm_m.in`  –
+the file with the set of parameters
 (slightly modified `qm.in` \[[1a]\]).
 
-`mol/*.in`  
-> input files with molecular geometries, 
+`mol/*.in`  –
+input files with molecular geometries, 
 the format is described in `README` \[[1a]\].
 Our program reads the section `$molecule` only.
 
-`mol/*.17.out`  
-> corresponding output files from our program.
+`mol/*.17.out`  –
+corresponding output files from our program.
 
-`mol/*.p11.out`  
-> corresponding output files from PRIRODA-11
+`mol/*.p11.out` –
+corresponding output files from PRIRODA-11
 (we used the binary `bin/p1` \[[1a]\]).
 
 ---
+
+## references
 
 <a name="ref1">\[1\]</a>
 D. N. Laikov, J. Chem. Phys. **135**, 134120 (2011).
