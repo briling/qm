@@ -40,7 +40,7 @@ corresponding output files from our program.
 
 `mol/*.p11.out` –
 corresponding output files from PRIRODA-11
-(we used the binary `bin/p1` \[[1a]\]).
+(we used `bin/p1` \[[1a]\]).
 
 ---
 
