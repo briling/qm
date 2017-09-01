@@ -31,11 +31,11 @@ the file with the set of parameters
 (slightly modified `qm.in` \[[1a]\]).
 
 `mol/*.in`  –
-input files with molecular geometries, 
+input files with molecular geometries,
 the format is described in `README` \[[1a]\].
 Our program reads the section `$molecule` only.
 
-`mol/*.17.out`  –
+`mol/*.x.out`  –
 corresponding output files from our program.
 
 `mol/*.p11.out` –
