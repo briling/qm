@@ -1,8 +1,8 @@
 $system mem=32 disk=-32 $end
 $control
-task=energy
-theory=qm
-basis=./qm_m.in
+ task=energy
+ theory=qm
+ basis=./qm_m.in
 $end
 $scf print=3 $end
 
@@ -13,5 +13,4 @@ $molecule
    8     0.00000000   0.00000000   1.15939559
    8     0.00000000   0.00000000  -1.15939559
 $end
- Energy =   -150.0341254472
 
