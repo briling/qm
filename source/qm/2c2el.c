@@ -89,7 +89,6 @@ double G_eq52_mmmm(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int q
   double au1 = qmd->agb[qu1*qmd->nLo+lu1];
   double av1 = qmd->agb[qu1*qmd->nLo+lv1];
   double q   = q1*q2*q3;
-  //хорошо бы вычислять их один раз за цикл, но только если нужны TODO
   double aa  = au+av;
   double aa1 = au1+av1;
   double a   = aa*aa1/(aa+aa1);

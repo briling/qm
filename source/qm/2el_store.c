@@ -40,9 +40,9 @@ double R2(int a, int v, int u1, int v1, double * pmmm, basis * bo, basis * bv, m
   if( (ku1!=kv1) || (kv==kv1) ){
     return 0.0;
   }
-  int mo   = qmd->nLo*qmd->nLo; // максимальное число орбиталей минимального базиса у атома
-  int mv   = qmd->nLv*qmd->nLv; // максимальное число орбиталей поляризационного базиса у атома
-  int b4   = mv*mo*mo*mo;       // размер блока интегралов для пары атомов
+  int mo  = qmd->nLo*qmd->nLo;
+  int mv  = qmd->nLv*qmd->nLv;
+  int b4  = mv*mo*mo*mo;
   int paind = (ka*m->n+ku1)*b4;
   int na  = bv->n[a ];
   int nv  = bo->n[v ];

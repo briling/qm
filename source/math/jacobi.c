@@ -44,7 +44,7 @@ static void givens(double * a,      double * b, double * d,
 }
 
 void jacobi(double * a, double * b, double * d,
-            unsigned int n, double eps, int    rot, FILE * f){
+            unsigned int n, double eps, unsigned int rot, FILE * f){
 
   unsigned int i, j, k, r, R;
   double   c, sinphi, cosphi, tgphi,

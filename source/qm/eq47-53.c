@@ -2,7 +2,7 @@
 #include "matrix.h"
 
 double F_eq47(int fbi, int lu, int lv, int qu, int qv, double r, qmdata * qmd){
-  double au = qmd->afb[qu*qmd->nLo+lu].a;  // можно хранить корни TODO
+  double au = qmd->afb[qu*qmd->nLo+lu].a;  // TODO roots can be stored
   double av = qmd->afb[qv*qmd->nLo+lv].a;
   double cv = qmd->afb[qv*qmd->nLo+lv].c;
   double cu = qmd->afb[qu*qmd->nLo+lu].c;

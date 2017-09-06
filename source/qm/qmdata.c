@@ -421,7 +421,7 @@ qmdata * qmdata_read(FILE * f){
     Q = qmd->q1a[i].q;
     qmd->q_list[Q].q1a++;
   }
-  for(int Q=0; Q<Qmax; Q++){
+  for(Q=0; Q<Qmax; Q++){
     qmd->q_list[Q+1].ga  += qmd->q_list[Q].ga;
     qmd->q_list[Q+1].qa  += qmd->q_list[Q].qa;
     qmd->q_list[Q+1].q1a += qmd->q_list[Q].q1a;

@@ -3,6 +3,12 @@ static inline double r3dot (double * u, double * v){
   return (u[0]*v[0] + u[1]*v[1] + u[2]*v[2]);
 }
 
+static inline double r3d2 (double * u, double * v){
+  return (u[0]-v[0])*(u[0]-v[0]) +
+         (u[1]-v[1])*(u[1]-v[1]) +
+	 (u[2]-v[2])*(u[2]-v[2]);
+}
+
 static inline void r3x (double * w, double * u, double * v){
   w[0] =  u[1]*v[2]-u[2]*v[1];
   w[1] = -u[0]*v[2]+u[2]*v[0];

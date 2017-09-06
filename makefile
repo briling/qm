@@ -1,13 +1,14 @@
-
 CC=gcc
 OPT=-O2
 GPROF=#-pg
 GDB=#-g
-W= \
+W= -Wall -Wextra \
    -Warray-bounds\
+   -Wempty-body\
    -Wfloat-equal\
    -Wimplicit\
    -Wmaybe-uninitialized\
+   -Wmisleading-indentation\
    -Wmissing-braces\
    -Wparentheses\
    -Wsequence-point\
@@ -15,25 +16,15 @@ W= \
    -Wtype-limits\
    -Wundef\
    -Wuninitialized\
-   -Wunused\
-   -Wmisleading-indentation\
-   -Wempty-body\
    -Wunused-parameter\
-   #-Winline\
-   #-Wunsafe-loop-optimizations\
-   #-W -Wall\
-   -Wno-format\
-   -Wconversion\
-   -Wsign-compare\
-   -Wjump-misses-init\
-   #-Werror\
+   -Wunused\
 
 CFLAGS= -c -MMD $(OPT) $(GPROF) $(W) $(GDB)
 OFLAGS= -lm $(GPROF)
 INCL= -I$(SRCDIR)/mol -I$(SRCDIR)/math -I$(SRCDIR)/qm
 
-OBJDIR=./obj
-SRCDIR=./src
+OBJDIR=./build
+SRCDIR=./source
 
 molsrc=$(wildcard $(SRCDIR)/mol/*.c)
 molobj=$(molsrc:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

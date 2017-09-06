@@ -10,7 +10,7 @@
 #define dDmax  1e-13
 #define K      64
 
-int main(int argc, void * argv[]){
+int main(int argc, char * argv[]){
 
   FILE * fo;
   FILE * fm;

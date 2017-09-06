@@ -3,7 +3,6 @@
 static double u_eq44(int n, double r);
 
 double B(int l1, int l2, int l3, int m1, int m2, int m3){
-  /* /home/xe/Documents/work/x/qm/sphhar/B */
 
   if( ((l1+l2+l3)%2) || (l1+l2<l3) || (l1+l3<l2) || (l2+l3<l1) ){
     return 0.0;
@@ -84,7 +83,7 @@ static double u_eq44(int n, double r){
   double t = 1.0;
   double s = t;
   for(int m=1; m<=n; m++){
-    t *= (r/m);    // факториалами можно запастись
+    t *= (r/m);    // TODO 1/m can be stored
     s += t;
   }
   return 1.0 - s*exp(-r);
