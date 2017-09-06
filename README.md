@@ -1,10 +1,6 @@
 # qm
 An implementation from scratch of the electronic structure model from \[[1]\].
 
-*I will publish the source code when it is polished enough (in a few weeks), 
-but for now there is only the `qm` binary for GNU/Linux (x86_64).
-Sorry!*
-
 ---
 
 ## requirements
