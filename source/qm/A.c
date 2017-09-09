@@ -2,6 +2,8 @@
 #include "vec3.h"
 #include "matrix.h"
 
+#define EPS 1e-15
+
 double A(int l, int m1, int m2, double z[3]){
 
   if(l == 0){
@@ -12,16 +14,26 @@ double A(int l, int m1, int m2, double z[3]){
 
   cb = z[2];
   double acb = fabs(cb);
-  if(acb < 1e-15){
+  if(acb < EPS){
     sb =  1.0;
     cg = -z[0];
     sg =  z[1];
   }
-  else if(fabs(acb-1.0)>1e-15){
+  else if(fabs(acb-1.0)>EPS){
     sb = sqrt(1.0 - cb*cb);
     double sb1 = 1.0/sb;
     cg = -z[0]*sb1;
     sg =  z[1]*sb1;
+#if 1
+    if(sg > 1.0){
+      sg = 1.0;
+      cg = 0.0;
+    }
+    else if(sg < -1.0){
+      sg = -1.0;
+      cg = 0.0;
+    }
+#endif
   }
   else{
     sb = 0.0;
@@ -80,12 +92,12 @@ static euler z2eu(double z[3]){
   double cb,sb,cg,sg; // ca = 1.0; sa = 0.0
   cb = z[2];
   double acb = fabs(cb);
-  if(acb < 1e-15){
+  if(acb < EPS){
     sb =  1.0;
     cg = -z[0];
     sg =  z[1];
   }
-  else if(fabs(acb-1.0)>1e-15){
+  else if(fabs(acb-1.0)>EPS){
     sb = sqrt(1.0 - cb*cb);
     double sb1 = 1.0/sb;
     cg = -z[0]*sb1;
