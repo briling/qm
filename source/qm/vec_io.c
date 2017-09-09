@@ -3,7 +3,7 @@
 
 static void vecarrange(unsigned int n, double * Ca, double * Ct, basis * bo){
   mx_transpcp(n, Ct, Ca);
-  for(int i=0; i<n; i++){
+  for(unsigned int i=0; i<n; i++){
     switch(bo->l[i]){
       case 0:
         veccp(n, Ca+n*i, Ct+n*i);

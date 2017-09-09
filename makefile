@@ -3,6 +3,7 @@ OPT=-O2
 GPROF=#-pg
 GDB=#-g
 W= -Wall -Wextra \
+   -Wformat=0\
    -Warray-bounds\
    -Wempty-body\
    -Wfloat-equal\
