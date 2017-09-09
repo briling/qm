@@ -1,7 +1,7 @@
 #include "matrix.h"
 #include "qm.h"
 
-static void vecarrange(int n, double * Ca, double * Ct, basis * bo){
+static void vecarrange(unsigned int n, double * Ca, double * Ct, basis * bo){
   mx_transpcp(n, Ct, Ca);
   for(int i=0; i<n; i++){
     switch(bo->l[i]){
@@ -54,6 +54,36 @@ int pvec_read(double * Va, double * Vb,
   vecarrange(n, Ca, Ct, bo);
   vecarrange(n, Cb, Ct, bo);
   free(Ct);
+  fclose(f);
+  return 1;
+}
+
+int pvec_write(double * Va, double * Vb,
+    double * Ca, double * Cb, const char s[], basis * bo){
+
+  FILE * f;
+  if( !(f = fopen(s, "w"))){
+    return 0;
+  }
+
+  int32_t n = bo->M;
+  size_t vsize = sizeof(double)*n;
+  size_t csize = sizeof(double)*n*n;
+
+  double * Ct = malloc(csize);
+  vecarrange(n, Ca, Ct, bo);
+  vecarrange(n, Ca, Ct, bo);
+  vecarrange(n, Cb, Ct, bo);
+  vecarrange(n, Cb, Ct, bo);
+  free(Ct);
+
+  if( !fwrite(&n, sizeof(n), 1, f) ||
+      !fwrite(Va, vsize, 1, f) || !fwrite(Ca, csize, 1, f) ||
+      !fwrite(Vb, vsize, 1, f) || !fwrite(Cb, csize, 1, f) ){
+    fclose(f);
+    return 0;
+  }
+
   fclose(f);
   return 1;
 }

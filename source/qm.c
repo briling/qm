@@ -5,19 +5,32 @@
 #include "eq.h"
 #include "2el.h"
 #include "tools.h"
-#include <time.h>
+#include "mytime.h"
 
-#define dDmax  1e-13
-#define K      64
+#define dDmax_def  1e-13
+#define K_def      64
 
 int main(int argc, char * argv[]){
 
-  FILE * fo;
   FILE * fm;
   FILE * fp;
   if (!((argc >= 1) && (fp = fopen(argv[1], "r"))))  GOTOHELL;
   if (!((argc >= 2) && (fm = fopen(argv[2], "r"))))  GOTOHELL;
-  if (!((argc >= 3) && (fo = fopen(argv[3], "w"))))  fo = stdout;
+
+  double dDmax = dDmax_def;
+  int    K     = K_def;
+  char   vi[256] = {0};
+  char   vo[256] = {0};
+  FILE * fo = stdout;
+  for(int i=3; i<argc; i++){
+    if( sscanf (argv[i], "tol:%lf",  &dDmax ) ) continue;
+    if( sscanf (argv[i], "it:%d",    &K     ) ) continue;
+    if( sscanf (argv[i], "read:%s",  &vi    ) ) continue;
+    if( sscanf (argv[i], "write:%s", &vo    ) ) continue;
+    if(! (fo = fopen(argv[i], "w"))){
+      fo = stdout;
+    }
+  }
 
   qmdata * qmd = qmdata_read(fp);
   fclose(fp);
@@ -57,16 +70,14 @@ int main(int argc, char * argv[]){
   fprintf(fo, "  Mv  = %d\n", Mv);
   fprintf(fo, "\n");
 
-  clock_t time1 = clock();
+  double time_sec = myutime();
   double E0 = E0_eq2(m, qmd);
 
-  // -------------------------------------------------------------------------------------------------
-
+  // ---------------------------------------------------------------------------
   double * f    = malloc(sizeof(double)*symsize(Mo));
   double * H    = malloc(sizeof(double)*symsize(Mo));
   double * Fa   = malloc(sizeof(double)*symsize(Mo));
   double * Fb   = malloc(sizeof(double)*symsize(Mo));
-
   double * Da   = malloc(sizeof(double)*symsize(Mo));
   double * Db   = malloc(sizeof(double)*symsize(Mo));
   double * oldD = malloc(sizeof(double)*symsize(Mo));
@@ -75,7 +86,6 @@ int main(int argc, char * argv[]){
   double * Cb   = malloc(sizeof(double)*Mo*Mo);
   double * Va   = malloc(sizeof(double)*Mo);
   double * Vb   = malloc(sizeof(double)*Mo);
-
   double * fmp  = malloc(sizeof(double)*Mo*Mv);
   double * Hmp  = malloc(sizeof(double)*Mo*Mv);
   double * Fmpa = malloc(sizeof(double)*Mo*Mv);
@@ -90,41 +100,39 @@ int main(int argc, char * argv[]){
   double * F2b  = malloc(sizeof(double)*symsize(Mo));
   double * FA   = malloc(sizeof(double)*symsize(Mo));
   double * FB   = malloc(sizeof(double)*symsize(Mo));
-
   double * rij  = malloc(sizeof(double)*symsize(m->n));
   euler  * z    = malloc(sizeof(euler )*(m->n)*(m->n));
-  distang(rij, z, m);
+  // ---------------------------------------------------------------------------
 
+  distang(rij, z, m);
   double * mmmm = mmmm0_fill(alo, rij, z, bo, m, qmd);
   double * pmmm = pmmm_fill (alo, alv, z, bo, bv, m, qmd);
-  // fill \bar F
-  f_eq25_mm(f,   z, alo, bo, m, qmd);
+  f_eq25_mm(f,   z, alo,      bo,     m, qmd);
   f_eq25_mp(fmp, z, alo, alv, bo, bv, m, qmd);
-  // fill H
   H_eq22_mm(f,   H,   alo,      mmmm, bo,     m, qmd);
   H_eq22_mp(fmp, Hmp, alo, alv, pmmm, bo, bv, m, qmd);
-  // add R6
   mmmm6_add(alo, mmmm, rij, bo, m, qmd);
 #if 0
   mmmm_check(mmmm, bo, m, qmd);
   pmmm_check(pmmm, bo, bv, m, qmd);
 #endif
 
-  // initial guess
-  mx_id(Mo, Ca);
-  veccp(symsize(Mo), Fw, f);
-  jacobi(Fw, Ca, Va, Mo, 1e-15, 20, NULL);
-  eigensort(Mo, Va, Ca);
-  veccp(Mo*Mo, Cb, Ca);
+  if(vi[0] && pvec_read(Va, Vb, Ca, Cb, vi, bo)){
+    fprintf(fo, " read coefficients from '%s'\n\n", vi);
+  }
+  else{
+    mx_id(Mo, Ca);
+    veccp(symsize(Mo), Fw, f);
+    jacobi(Fw, Ca, Va, Mo, 1e-15, 20, NULL);
+    eigensort(Mo, Va, Ca);
+    veccp(Mo*Mo, Cb, Ca);
+  }
 
   double E1 = 0.0;
   double E2 = 0.0;
-#if 1
   double oldE;
-  int k=0;
   vecset(symsize(Mo), oldD, 0.0);
-
-  fprintf(fo, " it %3d     E = % 17.10lf\n", k, E0+E1);
+  int k=0;
   while(k++<K){
     oldE = E1+E2;
     D_eq9 (Na, Mo, Ca, Da);
@@ -152,11 +160,10 @@ int main(int argc, char * argv[]){
     }
 
     double dE = E1+E2-oldE;
-    fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k, E0+E1+E2, dE, dD);
+    fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k, E0+E1+E2, k==1?0.0:dE, dD);
     if(dD < dDmax){
       break;
     }
-
   }
 
   fprintf(fo, "\n");
@@ -171,80 +178,57 @@ int main(int argc, char * argv[]){
   fprintf(fo, "  beta:\n");
   mo_table(Nb, Vb, Cb, bo, fo);
 
-#endif
-
-#if 1
   population(Da, Db, alo, m, qmd, fo);
-#endif
 
-  clock_t time2 = clock();
-  double  dur   = (double)(time2-time1)/CLOCKS_PER_SEC;
-  fprintf(fo, "\nTIME: %.2lf sec  %.2lf min\n\n", dur, dur/60.0);
+  time_sec = myutime()-time_sec;
+  fprintf(fo, "\nTIME: %.2lf sec  (%.2lf min)\n\n", time_sec, time_sec/60.0);
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#if 1
-  if(pvec_read(Va, Vb, Ca, Cb, "tmp.vec", bo)){
-    fprintf(fo, "  alpha:\n");
-    mo_table(Na, Va, Ca, bo, fo);
-    fprintf(fo, "  beta:\n");
-    mo_table(Nb, Vb, Cb, bo, fo);
-    D_eq9(Na, Mo, Ca, Da);
-    D_eq9(Nb, Mo, Cb, Db);
-    F_eq4(Da,Db, H, Fa,Fb, alo, mmmm, bo,m,qmd);
-    F2_8_7_14_15_6(Da, Db, Hmp, Fmpa, Fmpb, Xa, Xb, FaXa, FbXb, sa, sb, F2a, F2b, alo, alv, pmmm, bo, bv, m, qmd);
-    E1 = E1_eq3(Mo, H, Da, Db, Fa, Fb);
-    E2 = E2_eq5(Mo, Da, Db, F2a, F2b);
-    fprintf(fo, " (E0+1 = %20.10lf)\n", E0+E1);
-    fprintf(fo, " (E2   = %20.10lf)\n", E2);
-    fprintf(fo, "  E    = %20.10lf\n",  E0+E1+E2);
+  if(vo[0] && pvec_write(Va, Vb, Ca, Cb, vo, bo)){
+    fprintf(fo, " wrote coefficients to '%s'\n\n", vo);
   }
-#endif
+
 #if 0
   Heff_test(Na, Nb, Ca, Cb, H, Hmp, alo, alv, mmmm, pmmm, bo, bv, m, qmd);
 #endif
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  free(rij);
-  free(z);
-
-  free(alv);
+  // ---------------------------------------------------------------------------
   free(alo);
-  free(mmmm);
-  free(pmmm);
-
-  free(FA);
-  free(FB);
-  free(F2a);
-  free(F2b);
-  free(Fmpa);
-  free(Fmpb);
-  free(Xa);
-  free(Xb);
-  free(FaXa);
-  free(FbXb);
-  free(sa);
-  free(sb);
-  free(Hmp);
-  free(fmp);
-
-  free(Ca);
-  free(Cb);
-  free(Va);
-  free(Vb);
-  free(Fw);
-  free(f);
-  free(Fa);
-  free(Fb);
-  free(Da);
-  free(Db);
-  free(oldD);
-  free(H);
+  free(alv);
   free(bo);
   free(bv);
   free(m);
+  free(mmmm);
+  free(pmmm);
   free(qmd);
+
+  free(Ca);
+  free(Cb);
+  free(Da);
+  free(Db);
+  free(F2a);
+  free(F2b);
+  free(FA);
+  free(FB);
+  free(Fa);
+  free(FaXa);
+  free(Fb);
+  free(FbXb);
+  free(Fmpa);
+  free(Fmpb);
+  free(Fw);
+  free(H);
+  free(Hmp);
+  free(Va);
+  free(Vb);
+  free(Xa);
+  free(Xb);
+  free(f);
+  free(fmp);
+  free(oldD);
+  free(rij);
+  free(sa);
+  free(sb);
+  free(z);
 
   fclose(fo);
 
