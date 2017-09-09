@@ -21,7 +21,7 @@ int zmat2cart(int    n,  double * mr,  double r[3],
   else if(n == 2){
     r[0] = mr[a1*3  ] + R * sqrt( 1 - cos(phi)*cos(phi) );
     r[1] = mr[a1*3+1] ;
-    r[2] = mr[a1*3+2] + fabs(R) * cos(phi) ;
+    r[2] = mr[a1*3+2] + ( (mr[a2*3+2]<mr[a1*3+2])?-1.0:+1.0 ) * R * cos(phi) ;
   }
 
   else{
