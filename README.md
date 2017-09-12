@@ -17,11 +17,11 @@ make qm
 ```
 ./qm qm_m.in <molecule>.{in,out}
 ```
-#### Command line options:
-* `tol:%lf`   – SCF convergence criterion
+#### command line options:
+* `tol:%lf`   – scf convergence criterion
 * `it:%d`     – number of iterations
-* `read:%s`   – file name for reading SCF vectors 
-* `write:%s`  – file name for saving  SCF vectors 
+* `read:%s`   – file name for reading scf vectors 
+* `write:%s`  – file name for saving scf vectors 
 
 ---
 
