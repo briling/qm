@@ -162,6 +162,7 @@ int main(int argc, char * argv[]){
     double dE = E1+E2-oldE;
     fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k, E0+E1+E2, k==1?0.0:dE, dD);
     if(dD < dDmax){
+      fprintf(fo, "converged\n");
       break;
     }
   }
