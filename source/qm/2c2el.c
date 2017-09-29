@@ -79,7 +79,7 @@ static double fundconst(int l, int l1, int m){
   GOTOHELL;
 }
 
-double G_eq52_mmmm(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double r, qmdata * qmd){
+static double G_eq52_mmmm(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double r, qmdata * qmd){
   double q1,q2,q3;
   if( ! qlll_mm(qu,  lu, lv, l,  &q1, qmd)) GOTOHELL;
   if( ! qlll_mm(qu1, lu1,lv1,l1, &q2, qmd)) GOTOHELL;
@@ -101,7 +101,7 @@ double G_eq52_mmmm(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int q
   }
 }
 
-double G_eq52_mmmp(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double q1, double q2, double r, qmdata * qmd){
+static double G_eq52_mmmp(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double q1, double q2, double r, qmdata * qmd){
   double q3 = fundconst(l, l1, m);
   double au  = qmd->ag1b[qu *qmd->nLv+lu ];
   double av  = qmd->ag0b[qu *qmd->nLo+lv ];
