@@ -1,5 +1,5 @@
 # qm
-An implementation from scratch of the electronic structure model from \[[1]\].
+An implementation from scratch of the electronic structure model of \[[1]\].
 
 ---
 
