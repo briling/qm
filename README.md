@@ -1,26 +1,33 @@
-# qm
+<<<<<<< HEAD
+
+## qm
 An implementation from scratch of the electronic structure model of \[[1]\].
 
 ---
 
-## requirements
+### requirements
 * `GNU/Linux` or `Cygwin`
 * `make`
 * `gcc`
 
-## build
+### build
 ```
 make qm
 ```
 
-## usage
+### usage
 ```
 ./qm qm_m.in <molecule>.{in,out}
 ```
+#### command line options:
+* `tol:%lf`   – scf convergence criterion
+* `it:%d`     – number of iterations
+* `read:%s`   – file name for reading scf vectors 
+* `write:%s`  – file name for saving scf vectors 
 
 ---
 
-## files
+### files
 
 `qm_m.in`  –
 the file with the set of parameters
@@ -40,7 +47,7 @@ corresponding output files from PRIRODA-11
 
 ---
 
-## references
+### references
 
 <a name="ref1">\[1\]</a>
 D. N. Laikov, J. Chem. Phys. **135**, 134120 (2011).
