@@ -23,7 +23,7 @@ int main(int argc, char * argv[]){
   char   vo[256] = {0};
   FILE * fo = stdout;
   for(int i=3; i<argc; i++){
-    if( sscanf (argv[i], "tol:%lf",  &dDmax ) ) continue;
+    if( sscanf (argv[i], "conv:%lf",  &dDmax ) ) continue;
     if( sscanf (argv[i], "it:%d",    &K     ) ) continue;
     if( sscanf (argv[i], "read:%s",  &vi    ) ) continue;
     if( sscanf (argv[i], "write:%s", &vo    ) ) continue;

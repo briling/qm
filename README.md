@@ -19,7 +19,7 @@ make qm
 ./qm qm_m.in <molecule>.{in,out}
 ```
 #### command line options:
-* `tol:%lf`   – scf convergence criterion
+* `conv:%lf`   – scf convergence criterion
 * `it:%d`     – number of iterations
 * `read:%s`   – file name for reading scf vectors 
 * `write:%s`  – file name for saving scf vectors 
