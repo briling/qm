@@ -182,5 +182,6 @@ void Heff_test(int Na, int Nb,
   free(F2b);
   free(FA);
   free(FB);
+  return;
 }
 
