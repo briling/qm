@@ -7,6 +7,7 @@
 #include "tools.h"
 #include "mytime.h"
 
+#define VERSION    "v171005"
 #define dDmax_def  1e-13
 #define K_def      64
 
@@ -31,6 +32,9 @@ int main(int argc, char * argv[]){
       fo = stdout;
     }
   }
+  fprintf(fo, "\n"VERSION"\n");
+  fprintf(fo, "conv:%e\n", dDmax);
+  fprintf(fo, "it:%d\n",    K);
 
   qmdata * qmd = qmdata_read(fp);
   fclose(fp);
