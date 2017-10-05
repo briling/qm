@@ -33,6 +33,11 @@ double R0_eq39_mmmp_old(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu
 double R0_eq39_mmmm(int u, int v, int u1, int v1, int qu, int qu1, euler * z, basis * bo, qmdata * qmd);
 double R0_eq39_mmmp(int u, int v, int u1, int v1, int qu, int qu1, euler * z, basis * bo, basis * bv, qmdata * qmd);
 
+int qlll_mm(int qu, int lu, int lv, int l, double * q, qmdata * qmd);
+int qlll_pm(int qu, int la, int lv, int l, double * q, qmdata * qmd);
+double fundconst(int l, int l1, int m);
+void dipole(double * Da, double * Db, double * Dmp, double dip[3], int * alo, int * alv, basis * bo, basis * bv, mol * m, qmdata * qmd);
+
 double F_eq47    (int fbi,  int lu,  int lv, int qu, int qv, double r, qmdata * qmd);
 double F_eq48    (int f1bi, int la,  int lv, int qa, int qv, double r, qmdata * qmd);
 double V_eq49_mm (int ubi,  int lu,  int lv, int qu, int qk, double r, qmdata * qmd);
@@ -78,5 +83,17 @@ void Heff_test(int Na, int Nb,
     int * alo, int * alv, double * mmmm, double * pmmm,
     basis * bo, basis * bv, mol * m, qmdata * qmd);
 
+void Deff(double * Da, double * Db,
+    double * Xa,   double * Xb,
+    double * FaXa, double * FbXb,
+    double * sa,   double * sb,
+    double * Fmpa, double * Fmpb,
+    double * Dmp,
+    int * alo, basis * bo, basis * bv, qmdata * qmd);
 
+void Deff_test(int Na, int Nb,
+    double * Ca,  double * Cb,
+    double * Hmp, double * Dmp,
+    int * alo, int * alv, double * pmmm,
+    basis * bo, basis * bv, mol * m, qmdata * qmd);
 

@@ -1,4 +1,11 @@
 
+static inline void r3set (double * u, double s){
+  u[0] = s;
+  u[1] = s;
+  u[2] = s;
+  return;
+}
+
 static inline double r3dot (double * u, double * v){
   return (u[0]*v[0] + u[1]*v[1] + u[2]*v[2]);
 }

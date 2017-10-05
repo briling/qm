@@ -90,6 +90,7 @@ int main(int argc, char * argv[]){
   double * Hmp  = malloc(sizeof(double)*Mo*Mv);
   double * Fmpa = malloc(sizeof(double)*Mo*Mv);
   double * Fmpb = malloc(sizeof(double)*Mo*Mv);
+  double * Dmp  = malloc(sizeof(double)*Mo*Mv);
   double * Xa   = malloc(sizeof(double)*Mo*Mv);
   double * Xb   = malloc(sizeof(double)*Mo*Mv);
   double * FaXa = malloc(sizeof(double)*Mo*Mo);
@@ -172,6 +173,11 @@ int main(int argc, char * argv[]){
   fprintf(fo, " (E0+1 = %20.10lf)\n", E0+E1);
   fprintf(fo, " (E2   = %20.10lf)\n", E2);
   fprintf(fo, "  E    = %20.10lf\n",  E0+E1+E2);
+
+  Deff(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fmpa, Fmpb, Dmp, alo, bo, bv, qmd);
+  double dip[3] = {0.0};
+  dipole(Da, Db, Dmp, dip, alo, alv, bo, bv, m, qmd);
+  fprintf(fo, " dipole: %+10lf %+10lf %+10lf\n", dip[0], dip[1], dip[2]);
   spin2(Mo, Na, Nb, Ca, Cb, fo);
 
   fprintf(fo, "  alpha:\n");
@@ -188,6 +194,11 @@ int main(int argc, char * argv[]){
     fprintf(fo, " wrote coefficients to '%s'\n\n", vo);
   }
 
+  // ---------------------------------------------------------------------------
+
+#if 0
+  Deff_test(Na, Nb, Ca, Cb, Hmp, Dmp, alo, alv, pmmm, bo, bv, m, qmd);
+#endif
 #if 0
   Heff_test(Na, Nb, Ca, Cb, H, Hmp, alo, alv, mmmm, pmmm, bo, bv, m, qmd);
 #endif
@@ -216,6 +227,7 @@ int main(int argc, char * argv[]){
   free(FbXb);
   free(Fmpa);
   free(Fmpb);
+  free(Dmp);
   free(Fw);
   free(H);
   free(Hmp);

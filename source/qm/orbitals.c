@@ -36,7 +36,7 @@ void spin2(int M, int Na, int Nb, double * Ca, double * Cb, FILE * fo){
       ds -= Sab[i*M+j]*Sab[i*M+j];
     }
   }
-  fprintf(fo, " <S^2> : %.4lf / %.4lf\n\n", s0+ds, s0);
+  fprintf(fo, " <S^2> :  %.4lf / %.4lf\n\n", s0+ds, s0);
   free(Sab);
   return;
 }
