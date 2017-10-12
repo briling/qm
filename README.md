@@ -1,6 +1,7 @@
 
 ## qm
-An implementation from scratch of the electronic structure model of \[[1]\].
+An implementation from scratch of the electronic structure model of \[[1]\];
+see \[[2]\] for details.
 
 ---
 
@@ -21,8 +22,8 @@ make qm
 #### command line options:
 * `conv:%lf`   – scf convergence criterion
 * `it:%d`     – number of iterations
-* `read:%s`   – file name for reading scf vectors 
-* `write:%s`  – file name for saving scf vectors 
+* `read:%s`   – file name for reading scf vectors
+* `write:%s`  – file name for saving scf vectors
 
 ---
 
@@ -50,12 +51,18 @@ corresponding output files from PRIRODA-11
 
 <a name="ref1">\[1\]</a>
 D. N. Laikov, J. Chem. Phys. **135**, 134120 (2011).
-DOI: [10.1063/1.3646498](http://dx.doi.org/10.1063/1.3646498)
+DOI: [10.1063/1.3646498](https://dx.doi.org/10.1063/1.3646498)
 
 <a name="ref1a">\[1a\]</a>
 Supplementary material of \[[1]\].
 
+<a name="ref2">\[2\]</a>
+K. R. Briling, J. Chem. Phys. **147**, 000000 (2017).
+DOI: [10.1063/1.5000525](https://doi.org/10.1063/1.5000525)
+
 [1]: #ref1
 [1a]: #ref1a
+[2]: #ref2
 
-<a href="http://m.maploco.com/details/9af5rrkn"> <img src="http://www.maploco.com/vmap/s/9693527.png" width=1 > </a>  
+<a href="http://m.maploco.com/details/9af5rrkn"> <img src="http://www.maploco.com/vmap/s/9693527.png" width=1 > </a>
+
