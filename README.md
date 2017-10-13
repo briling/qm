@@ -42,7 +42,7 @@ Our program reads the section `$molecule` only.
 corresponding output files from our program.
 
 `mol/*.p11.out` –
-corresponding output files from PRIRODA-11
+corresponding output files from Priroda-11
 (we used `bin/p1` \[[1a]\]).
 
 ---
@@ -50,19 +50,19 @@ corresponding output files from PRIRODA-11
 ### references
 
 <a name="ref1">\[1\]</a>
-D. N. Laikov, J. Chem. Phys. **135**, 134120 (2011).
-DOI: [10.1063/1.3646498](https://dx.doi.org/10.1063/1.3646498)
+D. N. Laikov,  [J. Chem. Phys.][L2011] **135**, 134120 (2011).
 
 <a name="ref1a">\[1a\]</a>
 Supplementary material of \[[1]\].
 
 <a name="ref2">\[2\]</a>
-K. R. Briling, J. Chem. Phys. **147**, 000000 (2017).
-DOI: [10.1063/1.5000525](https://doi.org/10.1063/1.5000525)
+K. R. Briling, [J. Chem. Phys.][B2017] **147**, 157101 (2017).
 
 [1]: #ref1
 [1a]: #ref1a
 [2]: #ref2
+[L2011]:https://doi.org/10.1063/1.3646498
+[B2017]:https://doi.org/10.1063/1.5000525
 
 <a href="http://m.maploco.com/details/9af5rrkn"> <img src="http://www.maploco.com/vmap/s/9693527.png" width=1 > </a>
 
