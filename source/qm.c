@@ -6,6 +6,7 @@
 #include "mytime.h"
 
 #define VERSION    "v180131"
+#define print_def  1
 #define dDmax_def  1e-13
 #define maxit_def  64
 
@@ -18,12 +19,14 @@ int main(int argc, char * argv[]){
 
   double dDmax = dDmax_def;
   int    maxit = maxit_def;
+  int    print = print_def;
   char   vi[256] = {0};
   char   vo[256] = {0};
   FILE * fo = stdout;
   for(int i=3; i<argc; i++){
     if( sscanf (argv[i], "conv:%lf", &dDmax ) ) continue;
     if( sscanf (argv[i], "it:%d",    &maxit ) ) continue;
+    if( sscanf (argv[i], "print:%d", &print ) ) continue;
     if( sscanf (argv[i], "read:%s",  &vi    ) ) continue;
     if( sscanf (argv[i], "write:%s", &vo    ) ) continue;
     if(! (fo = fopen(argv[i], "w"))){
@@ -111,7 +114,7 @@ int main(int argc, char * argv[]){
     fprintf(fo, " read coefficients from '%s'\n\n", vi);
   }
   else{
-    double * Fw   = malloc(sizeof(double)*symsize(Mo));
+    double * Fw = malloc(sizeof(double)*symsize(Mo));
     mx_id(Mo, Ca);
     veccp(symsize(Mo), Fw, f);
     jacobi(Fw, Ca, Va, Mo, 1e-15, 20, NULL);
@@ -129,12 +132,16 @@ int main(int argc, char * argv[]){
   fprintf(fo, " dipole: %+10lf %+10lf %+10lf\n", dip[0], dip[1], dip[2]);
   spin2(Mo, Na, Nb, Ca, Cb, fo);
 
-  fprintf(fo, "  alpha:\n");
-  mo_table(Na, Va, Ca, bo, fo);
-  fprintf(fo, "  beta:\n");
-  mo_table(Nb, Vb, Cb, bo, fo);
+  if(print > 1){
+    fprintf(fo, "  alpha:\n");
+    mo_table(Na, Va, Ca, bo, fo);
+    fprintf(fo, "  beta:\n");
+    mo_table(Nb, Vb, Cb, bo, fo);
+  }
 
-  population(Da, Db, alo, m, qmd, fo);
+  if(print > 2){
+    population(Da, Db, alo, m, qmd, fo);
+  }
 
   time_sec = myutime()-time_sec;
   fprintf(fo, "\nTIME: %.2lf sec  (%.2lf min)\n\n", time_sec, time_sec/60.0);

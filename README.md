@@ -20,8 +20,9 @@ make qm
 ./qm qm_m.in <molecule>.{in,out}
 ```
 #### command line options:
-* `conv:%lf`   – scf convergence criterion
+* `conv:%lf`  – scf convergence criterion
 * `it:%d`     – number of iterations
+* `print:%d`  – printing options (1 – default, 2 – print scf vectors, 3 – print atomic charges and bond orders)
 * `read:%s`   – file name for reading scf vectors
 * `write:%s`  – file name for saving scf vectors
 

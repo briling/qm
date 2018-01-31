@@ -1,6 +1,6 @@
 for i in mol/*.in ; do
   echo $i;
-  ./qm qm_m.in $i ${i/\.in/.x.out1} ;
+  ./qm qm_m.in $i ${i/\.in/.x.out1} print:3;
 done
 
 for i in mol/*.x.out ; do
