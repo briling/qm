@@ -15,3 +15,10 @@ void mo_table(int N, double * V, double * C, basis * b, FILE * fo);
 void spin2(int M, int Na, int Nb, double * Ca, double * Cb, FILE * fo);
 void population(double * Da, double * Db, int * alo, mol * m, qmdata * qmd, FILE * fo);
 
+void scf(int Na, int Nb, double * Ca, double * Cb,
+    double * Va, double * Vb,
+    double * Da, double * Db, double * Dmp,
+    int maxit, double dDmax, int * alo, int * alv,
+    double * H, double * Hmp, double * mmmm, double * pmmm,
+    basis * bo, basis * bv, mol * m, qmdata * qmd, FILE * fo);
+

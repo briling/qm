@@ -3,12 +3,10 @@
 #include "2el.h"
 
 void D_eq9(int N, int M, double * C, double * D){
-  int i,j,k;
-  double s;
-  for(j=0; j<M;j++){
-    for(i=0; i<=j;i++){
-      s = 0.0;
-      for(k=0; k<N; k++){
+  for(int j=0; j<M; j++){
+    for(int i=0; i<=j; i++){
+      double s = 0.0;
+      for(int k=0; k<N; k++){
         s += C[k*M+i]*C[k*M+j];
       }
       D[mpos(i,j)] = s;

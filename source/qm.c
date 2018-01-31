@@ -1,15 +1,13 @@
-#include "mol.h"
-#include "vec3.h"
-#include "matrix.h"
 #include "qm.h"
+#include "matrix.h"
 #include "eq.h"
 #include "2el.h"
 #include "tools.h"
 #include "mytime.h"
 
-#define VERSION    "v171005"
+#define VERSION    "v180131"
 #define dDmax_def  1e-13
-#define K_def      64
+#define maxit_def  64
 
 int main(int argc, char * argv[]){
 
@@ -19,13 +17,13 @@ int main(int argc, char * argv[]){
   if (!((argc >= 2) && (fm = fopen(argv[2], "r"))))  GOTOHELL;
 
   double dDmax = dDmax_def;
-  int    K     = K_def;
+  int    maxit = maxit_def;
   char   vi[256] = {0};
   char   vo[256] = {0};
   FILE * fo = stdout;
   for(int i=3; i<argc; i++){
     if( sscanf (argv[i], "conv:%lf", &dDmax ) ) continue;
-    if( sscanf (argv[i], "it:%d",    &K     ) ) continue;
+    if( sscanf (argv[i], "it:%d",    &maxit ) ) continue;
     if( sscanf (argv[i], "read:%s",  &vi    ) ) continue;
     if( sscanf (argv[i], "write:%s", &vo    ) ) continue;
     if(! (fo = fopen(argv[i], "w"))){
@@ -34,7 +32,7 @@ int main(int argc, char * argv[]){
   }
   fprintf(fo, "\n"VERSION"\n");
   fprintf(fo, "conv:%e\n", dDmax);
-  fprintf(fo, "it:%d\n",    K);
+  fprintf(fo, "it:%d\n",   maxit);
 
   qmdata * qmd = qmdata_read(fp);
   fclose(fp);
@@ -75,40 +73,15 @@ int main(int argc, char * argv[]){
   fprintf(fo, "\n");
 
   double time_sec = myutime();
-  double E0 = E0_eq2(m, qmd);
 
-  // ---------------------------------------------------------------------------
+  // integrals -----------------------------------------------------------------
+
   double * f    = malloc(sizeof(double)*symsize(Mo));
-  double * H    = malloc(sizeof(double)*symsize(Mo));
-  double * Fa   = malloc(sizeof(double)*symsize(Mo));
-  double * Fb   = malloc(sizeof(double)*symsize(Mo));
-  double * Da   = malloc(sizeof(double)*symsize(Mo));
-  double * Db   = malloc(sizeof(double)*symsize(Mo));
-  double * oldD = malloc(sizeof(double)*symsize(Mo));
-  double * Fw   = malloc(sizeof(double)*symsize(Mo));
-  double * Ca   = malloc(sizeof(double)*Mo*Mo);
-  double * Cb   = malloc(sizeof(double)*Mo*Mo);
-  double * Va   = malloc(sizeof(double)*Mo);
-  double * Vb   = malloc(sizeof(double)*Mo);
   double * fmp  = malloc(sizeof(double)*Mo*Mv);
+  double * H    = malloc(sizeof(double)*symsize(Mo));
   double * Hmp  = malloc(sizeof(double)*Mo*Mv);
-  double * Fmpa = malloc(sizeof(double)*Mo*Mv);
-  double * Fmpb = malloc(sizeof(double)*Mo*Mv);
-  double * Dmp  = malloc(sizeof(double)*Mo*Mv);
-  double * Xa   = malloc(sizeof(double)*Mo*Mv);
-  double * Xb   = malloc(sizeof(double)*Mo*Mv);
-  double * FaXa = malloc(sizeof(double)*Mo*Mo);
-  double * FbXb = malloc(sizeof(double)*Mo*Mo);
-  double * sa   = malloc(sizeof(double)*Mo);
-  double * sb   = malloc(sizeof(double)*Mo);
-  double * F2a  = malloc(sizeof(double)*symsize(Mo));
-  double * F2b  = malloc(sizeof(double)*symsize(Mo));
-  double * FA   = malloc(sizeof(double)*symsize(Mo));
-  double * FB   = malloc(sizeof(double)*symsize(Mo));
   double * rij  = malloc(sizeof(double)*symsize(m->n));
   euler  * z    = malloc(sizeof(euler )*(m->n)*(m->n));
-  // ---------------------------------------------------------------------------
-
   distang(rij, z, m);
   double * mmmm = mmmm0_fill(alo, rij, z, bo, m, qmd);
   double * pmmm = pmmm_fill (alo, alv, z, bo, bv, m, qmd);
@@ -121,64 +94,36 @@ int main(int argc, char * argv[]){
   mmmm_check(mmmm, bo, m, qmd);
   pmmm_check(pmmm, bo, bv, m, qmd);
 #endif
+  free(z);
+  free(rij);
+
+  // init ----------------------------------------------------------------------
+
+  double * Ca   = malloc(sizeof(double)*Mo*Mo);
+  double * Cb   = malloc(sizeof(double)*Mo*Mo);
+  double * Va   = malloc(sizeof(double)*Mo);
+  double * Vb   = malloc(sizeof(double)*Mo);
+  double * Da   = malloc(sizeof(double)*symsize(Mo));
+  double * Db   = malloc(sizeof(double)*symsize(Mo));
+  double * Dmp  = malloc(sizeof(double)*Mo*Mv);
 
   if(vi[0] && pvec_read(Va, Vb, Ca, Cb, vi, bo)){
     fprintf(fo, " read coefficients from '%s'\n\n", vi);
   }
   else{
+    double * Fw   = malloc(sizeof(double)*symsize(Mo));
     mx_id(Mo, Ca);
     veccp(symsize(Mo), Fw, f);
     jacobi(Fw, Ca, Va, Mo, 1e-15, 20, NULL);
     eigensort(Mo, Va, Ca);
     veccp(Mo*Mo, Cb, Ca);
+    free(Fw);
   }
 
-  double E1 = 0.0;
-  double E2 = 0.0;
-  double oldE;
-  vecset(symsize(Mo), oldD, 0.0);
-  int k = 0;
-  while(k++<K){
-    oldE = E1+E2;
-    D_eq9 (Na, Mo, Ca, Da);
-    D_eq9 (Nb, Mo, Cb, Db);
-    F_eq4 (Da, Db, H, Fa, Fb, alo, mmmm, bo, m, qmd);
-    F2_8_7_14_15_6(Da, Db, Hmp, Fmpa, Fmpb, Xa, Xb, FaXa, FbXb, sa, sb, F2a, F2b, alo, alv, pmmm, bo, bv, m, qmd);
-    Heff(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fa, Fb, F2a, F2b, Fmpa, Fmpb, FA, FB, alo, alv, pmmm, bo, bv, m, qmd);
-    mx_id(Mo, Ca);
-    veccp(symsize(Mo), Fw, FA);
-    jacobi(Fw, Ca, Va, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Va, Ca);
-    mx_id(Mo, Cb);
-    veccp(symsize(Mo), Fw, FB);
-    jacobi(Fw, Cb, Vb, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Vb, Cb);
-    E1 = E1_eq3(Mo, H, Da, Db, Fa, Fb);
-    E2 = E2_eq5(Mo, Da, Db, F2a, F2b);
+  // ---------------------------------------------------------------------------
 
-    double dD = 0.0;
-    for(int i=0; i<symsize(Mo); i++){
-      double ab = Da[i]+Db[i];
-      double d  = oldD[i] - ab;
-      dD += d*d;
-      oldD[i] = ab;
-    }
+  scf(Na, Nb, Ca, Cb, Va, Vb, Da, Db, Dmp, maxit, dDmax, alo, alv, H, Hmp, mmmm, pmmm, bo, bv, m, qmd, fo);
 
-    double dE = E1+E2-oldE;
-    fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k, E0+E1+E2, k==1?0.0:dE, dD);
-    if(dD < dDmax){
-      fprintf(fo, "converged\n");
-      break;
-    }
-  }
-
-  fprintf(fo, "\n");
-  fprintf(fo, " (E0   = %20.10lf)\n", E0);
-  fprintf(fo, " (E0+1 = %20.10lf)\n", E0+E1);
-  fprintf(fo, " (E2   = %20.10lf)\n", E2);
-  fprintf(fo, "  E    = %20.10lf\n",  E0+E1+E2);
-
-  Deff(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fmpa, Fmpb, Dmp, alo, bo, bv, qmd);
   double dip[3] = {0.0};
   dipole(Da, Db, Dmp, dip, alo, alv, bo, bv, m, qmd);
   fprintf(fo, " dipole: %+10lf %+10lf %+10lf\n", dip[0], dip[1], dip[2]);
@@ -198,8 +143,6 @@ int main(int argc, char * argv[]){
     fprintf(fo, " wrote coefficients to '%s'\n\n", vo);
   }
 
-  // ---------------------------------------------------------------------------
-
 #if 0
   Deff_test(Na, Nb, Ca, Cb, Hmp, Dmp, alo, alv, pmmm, bo, bv, m, qmd);
 #endif
@@ -208,6 +151,7 @@ int main(int argc, char * argv[]){
 #endif
 
   // ---------------------------------------------------------------------------
+
   free(alo);
   free(alv);
   free(bo);
@@ -219,33 +163,15 @@ int main(int argc, char * argv[]){
 
   free(Ca);
   free(Cb);
-  free(Da);
-  free(Db);
-  free(F2a);
-  free(F2b);
-  free(FA);
-  free(FB);
-  free(Fa);
-  free(FaXa);
-  free(Fb);
-  free(FbXb);
-  free(Fmpa);
-  free(Fmpb);
-  free(Dmp);
-  free(Fw);
-  free(H);
-  free(Hmp);
   free(Va);
   free(Vb);
-  free(Xa);
-  free(Xb);
+  free(Da);
+  free(Db);
+  free(Dmp);
   free(f);
   free(fmp);
-  free(oldD);
-  free(rij);
-  free(sa);
-  free(sb);
-  free(z);
+  free(H);
+  free(Hmp);
 
   fclose(fo);
 
