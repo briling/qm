@@ -12,22 +12,24 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
   int Mo = bo->M;
   int Mv = bv->M;
 
-  double * Fa   = malloc(sizeof(double)*symsize(Mo));
-  double * Fb   = malloc(sizeof(double)*symsize(Mo));
-  double * oldD = malloc(sizeof(double)*symsize(Mo));
-  double * Fw   = malloc(sizeof(double)*symsize(Mo));
-  double * Fmpa = malloc(sizeof(double)*Mo*Mv);
-  double * Fmpb = malloc(sizeof(double)*Mo*Mv);
-  double * Xa   = malloc(sizeof(double)*Mo*Mv);
-  double * Xb   = malloc(sizeof(double)*Mo*Mv);
-  double * FaXa = malloc(sizeof(double)*Mo*Mo);
-  double * FbXb = malloc(sizeof(double)*Mo*Mo);
-  double * sa   = malloc(sizeof(double)*Mo);
-  double * sb   = malloc(sizeof(double)*Mo);
-  double * F2a  = malloc(sizeof(double)*symsize(Mo));
-  double * F2b  = malloc(sizeof(double)*symsize(Mo));
-  double * FA   = malloc(sizeof(double)*symsize(Mo));
-  double * FB   = malloc(sizeof(double)*symsize(Mo));
+  double * Fa    = malloc(sizeof(double)*symsize(Mo));
+  double * Fb    = malloc(sizeof(double)*symsize(Mo));
+  double * oldD  = malloc(sizeof(double)*symsize(Mo));
+  double * Fw    = malloc(sizeof(double)*symsize(Mo));
+  double * Fmpa  = malloc(sizeof(double)*Mo*Mv);
+  double * Fmpb  = malloc(sizeof(double)*Mo*Mv);
+  double * Xa    = malloc(sizeof(double)*Mo*Mv);
+  double * Xb    = malloc(sizeof(double)*Mo*Mv);
+  double * FaXa  = malloc(sizeof(double)*Mo*Mo);
+  double * FbXb  = malloc(sizeof(double)*Mo*Mo);
+  double * sa    = malloc(sizeof(double)*Mo);
+  double * sb    = malloc(sizeof(double)*Mo);
+  double * F2a   = malloc(sizeof(double)*symsize(Mo));
+  double * F2b   = malloc(sizeof(double)*symsize(Mo));
+  double * FA    = malloc(sizeof(double)*symsize(Mo));
+  double * FB    = malloc(sizeof(double)*symsize(Mo));
+  double * dEdFa = malloc(sizeof(double)*Mo*Mv);
+  double * dEdFb = malloc(sizeof(double)*Mo*Mv);
 
   double E0 = E0_eq2(m, qmd);
   double E1 = 0.0;
@@ -35,13 +37,14 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
   double oldE;
   vecset(symsize(Mo), oldD, 0.0);
   int k = 0;
+
   while(k++ < maxit){
     oldE = E1+E2;
     D_eq9 (Na, Mo, Ca, Da);
     D_eq9 (Nb, Mo, Cb, Db);
     F_eq4 (Da, Db, H, Fa, Fb, alo, mmmm, bo, m, qmd);
     F2_8_7_14_15_6(Da, Db, Hmp, Fmpa, Fmpb, Xa, Xb, FaXa, FbXb, sa, sb, F2a, F2b, alo, alv, pmmm, bo, bv, m, qmd);
-    Heff(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fa, Fb, F2a, F2b, Fmpa, Fmpb, FA, FB, alo, alv, pmmm, bo, bv, m, qmd);
+    Heff(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fa, Fb, F2a, F2b, Fmpa, Fmpb, FA, FB, dEdFa, dEdFb, alo, alv, pmmm, bo, bv, m, qmd);
     mx_id(Mo, Ca);
     veccp(symsize(Mo), Fw, FA);
     jacobi(Fw, Ca, Va, Mo, 1e-15, 20, NULL);
@@ -76,7 +79,7 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
   fprintf(fo, " (E2   = %20.10lf)\n", E2);
   fprintf(fo, "  E    = %20.10lf\n",  E0+E1+E2);
 
-  Deff(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fmpa, Fmpb, Dmp, alo, bo, bv, qmd);
+  vecsum(Mo*Mv, Dmp, dEdFa, dEdFb);
 
   free(Fa);
   free(Fb);
@@ -94,6 +97,8 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
   free(F2b);
   free(FA);
   free(FB);
+  free(dEdFa);
+  free(dEdFb);
 
   return;
 }

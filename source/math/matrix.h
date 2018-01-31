@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -30,6 +29,4 @@ void     mx_transpcp  (unsigned int   n, double * p, double * a);
 void     mx_multtrmx   (unsigned int n, double * p, double * a, double * b);
 
 void     jacobi      (double * a, double * b, double * d, unsigned int n, double eps, unsigned int rot, FILE * f);
-
-
 

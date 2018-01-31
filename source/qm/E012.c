@@ -21,8 +21,8 @@ double E0_eq2(mol * m, qmdata * qmd){
 
 double E1_eq3(int Mo, double * H, double * Da, double * Db, double * Fa, double * Fb){
   double E1 = 0.0;
-  for(int u=0;u<Mo;u++){
-    for(int v=0;v<u;v++){
+  for(int u=0; u<Mo; u++){
+    for(int v=0; v<u; v++){
       int uv = mpos(v,u);
       E1 += (H[uv]+Fa[uv])*Da[uv] + (H[uv]+Fb[uv])*Db[uv] ;
     }

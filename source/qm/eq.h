@@ -68,14 +68,15 @@ static inline void F2_8_7_14_15_6(
 }
 
 void Heff(double * Da, double * Db,
-    double * Xa,   double * Xb,
-    double * FaXa, double * FbXb,
-    double * sa,   double * sb,
-    double * Fa,   double * Fb,
-    double * F2a,  double * F2b,
-    double * Fmpa, double * Fmpb,
-    double * FA,   double * FB,
-    int    * alo,  int    * alv, double * pmmm,
+    double * Xa,    double * Xb,
+    double * FaXa,  double * FbXb,
+    double * sa,    double * sb,
+    double * Fa,    double * Fb,
+    double * F2a,   double * F2b,
+    double * Fmpa,  double * Fmpb,
+    double * FA,    double * FB,
+    double * dEdFa, double * dEdFb,
+    int    * alo,   int    * alv, double * pmmm,
     basis * bo, basis * bv, mol * m, qmdata * qmd);
 
 void Heff_test(int Na, int Nb,

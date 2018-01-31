@@ -2,26 +2,21 @@
 #include "matrix.h"
 #include "2el.h"
 
-void Heff(double * Da, double * Db,
-    double * Xa,   double * Xb,
-    double * FaXa, double * FbXb,
-    double * sa,   double * sb,
-    double * Fa,   double * Fb,
-    double * F2a,  double * F2b,
-    double * Fmpa, double * Fmpb,
-    double * FA,   double * FB,
-    int    * alo,  int    * alv, double * pmmm,
-    basis * bo, basis * bv, mol * m, qmdata * qmd){
+static void dEdF(double * Da, double * Db,
+    double * Xa,    double * Xb,
+    double * FaXa,  double * FbXb,
+    double * sa,    double * sb,
+    double * Fmpa,  double * Fmpb,
+    double * dEdFa, double * dEdFb,
+    int    * alo, basis * bo, basis * bv, qmdata * qmd){
 
   int Mo = bo->M;
   int Mv = bv->M;
-  int MM = Mo*Mv;
-  double * dEdFa = malloc(sizeof(double)*MM*2);
-  double * dEdFb = dEdFa + MM;
-
   for(int u1=0; u1<Mo; u1++){
     int lu1 = bo->l[u1];
     int ku1 = bo->k[u1];
+    int bra = alo[ku1]+lu1*lu1;
+    int ket = alo[ku1]+(lu1+1)*(lu1+1);
     double eu1 = qmd->fa [bo->Q[u1]*qmd->nLo+lu1];
     double cu1 = 2.0/(1.0+2.0*lu1);
     for(int a1=0; a1<Mv; a1++){
@@ -45,7 +40,7 @@ void Heff(double * Da, double * Db,
         star2bX += Db[i] * Xb[a1v] * sb[v];
         star2aF += Da[i] * Fmpa[a1v];
         star2bF += Db[i] * Fmpb[a1v];
-        for(int u=alo[ku1]+lu1*lu1 ; u<alo[ku1]+(lu1+1)*(lu1+1); u++){ /* functions on atom ku1 with L==lu1 */
+        for(int u=bra; u<ket; u++){ /* functions on atom ku1 with L==lu1 */
           int vu  = v*Mo+u;
           int vus = MPOSIF(u,v);
           star1a += Da[vus] * FaXa[vu];
@@ -57,6 +52,25 @@ void Heff(double * Da, double * Db,
       dEdFb[a1*Mo+u1] = star2bX + ( star2bF - star1b * cu1*sb[u1]*Xb[a1u1] ) * sb_u1a1 ;
     }
   }
+  return;
+}
+
+void Heff(double * Da, double * Db,
+    double * Xa,    double * Xb,
+    double * FaXa,  double * FbXb,
+    double * sa,    double * sb,
+    double * Fa,    double * Fb,
+    double * F2a,   double * F2b,
+    double * Fmpa,  double * Fmpb,
+    double * FA,    double * FB,
+    double * dEdFa, double * dEdFb,
+    int    * alo,   int    * alv, double * pmmm,
+    basis * bo, basis * bv, mol * m, qmdata * qmd){
+
+  int Mo = bo->M;
+  int Mv = bv->M;
+
+  dEdF(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fmpa, Fmpb, dEdFa, dEdFb, alo, bo, bv, qmd);
 
   for(int u1=0; u1<Mo; u1++){
     int ku1 = bo->k[u1];
@@ -107,7 +121,6 @@ void Heff(double * Da, double * Db,
 
   }
 
-  free(dEdFa);
   return;
 }
 
@@ -117,28 +130,30 @@ void Heff_test(int Na, int Nb,
     basis * bo, basis * bv, mol * m, qmdata * qmd){
   int Mo = bo->M;
   int Mv = bv->M;
-  double * Da   = malloc(sizeof(double)*symsize(Mo));
-  double * Db   = malloc(sizeof(double)*symsize(Mo));
-  double * Fa   = malloc(sizeof(double)*symsize(Mo));
-  double * Fb   = malloc(sizeof(double)*symsize(Mo));
-  double * Fmpa = malloc(sizeof(double)*Mo*Mv);
-  double * Fmpb = malloc(sizeof(double)*Mo*Mv);
-  double * Xa   = malloc(sizeof(double)*Mo*Mv);
-  double * Xb   = malloc(sizeof(double)*Mo*Mv);
-  double * FaXa = malloc(sizeof(double)*Mo*Mo);
-  double * FbXb = malloc(sizeof(double)*Mo*Mo);
-  double * sa   = malloc(sizeof(double)*Mo);
-  double * sb   = malloc(sizeof(double)*Mo);
-  double * F2a  = malloc(sizeof(double)*symsize(Mo));
-  double * F2b  = malloc(sizeof(double)*symsize(Mo));
-  double * FA   = malloc(sizeof(double)*symsize(Mo));
-  double * FB   = malloc(sizeof(double)*symsize(Mo));
+  double * Da    = malloc(sizeof(double)*symsize(Mo));
+  double * Db    = malloc(sizeof(double)*symsize(Mo));
+  double * Fa    = malloc(sizeof(double)*symsize(Mo));
+  double * Fb    = malloc(sizeof(double)*symsize(Mo));
+  double * Fmpa  = malloc(sizeof(double)*Mo*Mv);
+  double * Fmpb  = malloc(sizeof(double)*Mo*Mv);
+  double * Xa    = malloc(sizeof(double)*Mo*Mv);
+  double * Xb    = malloc(sizeof(double)*Mo*Mv);
+  double * FaXa  = malloc(sizeof(double)*Mo*Mo);
+  double * FbXb  = malloc(sizeof(double)*Mo*Mo);
+  double * sa    = malloc(sizeof(double)*Mo);
+  double * sb    = malloc(sizeof(double)*Mo);
+  double * F2a   = malloc(sizeof(double)*symsize(Mo));
+  double * F2b   = malloc(sizeof(double)*symsize(Mo));
+  double * FA    = malloc(sizeof(double)*symsize(Mo));
+  double * FB    = malloc(sizeof(double)*symsize(Mo));
+  double * dEdFa = malloc(sizeof(double)*Mo*Mv);
+  double * dEdFb = malloc(sizeof(double)*Mo*Mv);
   double E1, E2, e1, e2, de;
   D_eq9  (Na, Mo, Ca, Da);
   D_eq9  (Nb, Mo, Cb, Db);
   F_eq4  (Da,Db, H, Fa,Fb, alo, mmmm, bo,m,qmd);
   F2_8_7_14_15_6(Da, Db, Hmp, Fmpa, Fmpb, Xa, Xb, FaXa, FbXb, sa, sb, F2a, F2b, alo, alv, pmmm, bo, bv, m, qmd);
-  Heff   (Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fa, Fb, F2a, F2b, Fmpa, Fmpb, FA, FB, alo, alv, pmmm, bo, bv, m, qmd);
+  Heff   (Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fa, Fb, F2a, F2b, Fmpa, Fmpb, FA, FB, dEdFa, dEdFb, alo, alv, pmmm, bo, bv, m, qmd);
   mx_nosym_print(Mo, FA, stdout);
   for(int u=0; u<Mo; u++){
     for(int v=u; v<Mo; v++){
@@ -182,6 +197,8 @@ void Heff_test(int Na, int Nb,
   free(F2b);
   free(FA);
   free(FB);
+  free(dEdFa);
+  free(dEdFb);
   return;
 }
 
