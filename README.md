@@ -13,6 +13,7 @@ see \[[2]\] for details.
 ### build
 ```
 make qm
+make test
 ```
 
 ### usage

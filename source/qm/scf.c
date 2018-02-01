@@ -45,15 +45,7 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
     F_eq4 (Da, Db, H, Fa, Fb, alo, mmmm, bo, m, qmd);
     F2_8_7_14_15_6(Da, Db, Hmp, Fmpa, Fmpb, Xa, Xb, FaXa, FbXb, sa, sb, F2a, F2b, alo, alv, pmmm, bo, bv, m, qmd);
     Heff(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fa, Fb, F2a, F2b, Fmpa, Fmpb, FA, FB, dEdFa, dEdFb, alo, alv, pmmm, bo, bv, m, qmd);
-    mx_id(Mo, Ca);
-    veccp(symsize(Mo), Fw, FA);
-    jacobi(Fw, Ca, Va, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Va, Ca);
-    mx_id(Mo, Cb);
-    veccp(symsize(Mo), Fw, FB);
-    jacobi(Fw, Cb, Vb, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Vb, Cb);
-    // TODO
+
     E1 = E1_eq3(Mo, H, Da, Db, Fa, Fb);
     E2 = E2_eq5(Mo, Da, Db, F2a, F2b);
 
@@ -64,13 +56,26 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
       dD += d*d;
       oldD[i] = ab;
     }
-
     double dE = E1+E2-oldE;
-    fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k, E0+E1+E2, k==1?0.0:dE, dD);
+    if(k==1){
+      fprintf(fo, " it %3d     E = % 17.10lf\n", k, E0+E1+E2);
+    }
+    else{
+      fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k, E0+E1+E2, dE, dD);
+    }
     if(dD < dDmax){
       fprintf(fo, "converged\n");
       break;
     }
+
+    mx_id(Mo, Ca);
+    veccp(symsize(Mo), Fw, FA);
+    jacobi(Fw, Ca, Va, Mo, 1e-15, 20, NULL);
+    eigensort(Mo, Va, Ca);
+    mx_id(Mo, Cb);
+    veccp(symsize(Mo), Fw, FB);
+    jacobi(Fw, Cb, Vb, Mo, 1e-15, 20, NULL);
+    eigensort(Mo, Vb, Cb);
   }
 
   fprintf(fo, "\n");

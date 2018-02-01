@@ -5,7 +5,7 @@
 #include "tools.h"
 #include "mytime.h"
 
-#define VERSION    "v180131"
+#define VERSION    "v180201"
 #define print_def  1
 #define dDmax_def  1e-13
 #define maxit_def  64

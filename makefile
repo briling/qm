@@ -50,5 +50,8 @@ clean :
 cleand :
 	rm -f $(OBJDIR)/*/*.d $(OBJDIR)/*.d
 
+test :
+	bash test.bash
+
 include $(wildcard $(OBJDIR)/*.d)
 
