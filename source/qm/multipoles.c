@@ -90,7 +90,7 @@ void dipole(double * Da, double * Db, double * Dmp,
       int lv = bo->l[v];
       int mv = bo->m[v];
       // min-min dip.:
-      for(int u=alo[k]; u<alo[k+1]; u++){
+      for(int u=alo[k]; u<v; u++){ // if u==v -> lu==lv -> B(lu,lv,1)==0
         int lu = bo->l[u];
         int mu = bo->m[u];
         double q;
@@ -99,8 +99,8 @@ void dipole(double * Da, double * Db, double * Dmp,
         b[0] = B(lu,lv,1,mu,mv, 1);
         b[1] = B(lu,lv,1,mu,mv,-1);
         b[2] = B(lu,lv,1,mu,mv, 0);
-        int uv = MPOSIF(u,v);
-        r3adds(dip, b, -(Da[uv]+Db[uv]) * q * SQRT3);
+        int uv = mpos(u,v);
+        r3adds(dip, b, -2.0*SQRT3 * q * (Da[uv]+Db[uv]));
       }
       // min-pol dip.:
       for(int a=alv[k]; a<alv[k+1]; a++){
@@ -112,11 +112,11 @@ void dipole(double * Da, double * Db, double * Dmp,
         b[0] = B(la,lv,1,ma,mv, 1);
         b[1] = B(la,lv,1,ma,mv,-1);
         b[2] = B(la,lv,1,ma,mv, 0);
-        r3adds(dip, b, -Dmp[a*bo->M+v] * q * SQRT3);
+        r3adds(dip, b, -SQRT3 * q * Dmp[a*bo->M+v]);
       }
       // mono:
-      int i = mpos(v,v);
-      z -= Da[i] + Db[i];
+      int vv = mpos(v,v);
+      z -= Da[vv] + Db[vv];
     }
     r3adds(dip, m->r+k*3, z);
   }
