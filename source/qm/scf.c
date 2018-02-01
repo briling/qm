@@ -34,12 +34,12 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
   double E0 = E0_eq2(m, qmd);
   double E1 = 0.0;
   double E2 = 0.0;
-  double oldE;
+  double E  = E0+E1+E2;
   vecset(symsize(Mo), oldD, 0.0);
   int k = 0;
 
   while(k++ < maxit){
-    oldE = E1+E2;
+    double oldE = E;
     D_eq9 (Na, Mo, Ca, Da);
     D_eq9 (Nb, Mo, Cb, Db);
     F_eq4 (Da, Db, H, Fa, Fb, alo, mmmm, bo, m, qmd);
@@ -48,6 +48,7 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
 
     E1 = E1_eq3(Mo, H, Da, Db, Fa, Fb);
     E2 = E2_eq5(Mo, Da, Db, F2a, F2b);
+    E  = E0+E1+E2;
 
     double dD = 0.0;
     for(int i=0; i<symsize(Mo); i++){
@@ -56,12 +57,12 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
       dD += d*d;
       oldD[i] = ab;
     }
-    double dE = E1+E2-oldE;
+    double dE = E-oldE;
     if(k==1){
-      fprintf(fo, " it %3d     E = % 17.10lf\n", k, E0+E1+E2);
+      fprintf(fo, " it %3d     E = % 17.10lf\n", k, E);
     }
     else{
-      fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k, E0+E1+E2, dE, dD);
+      fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k, E, dE, dD);
     }
     if(dD < dDmax){
       fprintf(fo, "converged\n");
@@ -82,7 +83,7 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
   fprintf(fo, " (E0   = %20.10lf)\n", E0);
   fprintf(fo, " (E0+1 = %20.10lf)\n", E0+E1);
   fprintf(fo, " (E2   = %20.10lf)\n", E2);
-  fprintf(fo, "  E    = %20.10lf\n",  E0+E1+E2);
+  fprintf(fo, "  E    = %20.10lf\n",  E);
 
   vecsum(Mo*Mv, Dmp, dEdFa, dEdFb);
 
