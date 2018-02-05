@@ -44,7 +44,8 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
     D_eq9 (Nb, Mo, Cb, Db);
     F_eq4 (Da, Db, H, Fa, Fb, alo, mmmm, bo, m, qmd);
     F2_8_7_14_15_6(Da, Db, Hmp, Fmpa, Fmpb, Xa, Xb, FaXa, FbXb, sa, sb, F2a, F2b, alo, alv, pmmm, bo, bv, m, qmd);
-    Heff(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fa, Fb, F2a, F2b, Fmpa, Fmpb, FA, FB, dEdFa, dEdFb, alo, alv, pmmm, bo, bv, m, qmd);
+    dEdF(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fmpa, Fmpb, dEdFa, dEdFb, alo, bo, bv, qmd);
+    Heff(dEdFa, dEdFb, Fa, Fb, F2a, F2b, FA, FB, alo, alv, pmmm, bo, bv, m, qmd);
 
     E1 = E1_eq3(Mo, H, Da, Db, Fa, Fb);
     E2 = E2_eq5(Mo, Da, Db, F2a, F2b);

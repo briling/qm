@@ -2,7 +2,7 @@
 #include "matrix.h"
 #include "2el.h"
 
-static void dEdF(double * Da, double * Db,
+void dEdF(double * Da, double * Db,
     double * Xa,    double * Xb,
     double * FaXa,  double * FbXb,
     double * sa,    double * sb,
@@ -48,29 +48,22 @@ static void dEdF(double * Da, double * Db,
         }
       }
 
-      dEdFa[a1*Mo+u1] = star2aX + ( star2aF - star1a * cu1*sa[u1]*Xa[a1u1] ) * sa_u1a1 ;
-      dEdFb[a1*Mo+u1] = star2bX + ( star2bF - star1b * cu1*sb[u1]*Xb[a1u1] ) * sb_u1a1 ;
+      dEdFa[a1u1] = star2aX + ( star2aF - star1a * cu1*sa[u1]*Xa[a1u1] ) * sa_u1a1 ;
+      dEdFb[a1u1] = star2bX + ( star2bF - star1b * cu1*sb[u1]*Xb[a1u1] ) * sb_u1a1 ;
     }
   }
   return;
 }
 
-void Heff(double * Da, double * Db,
-    double * Xa,    double * Xb,
-    double * FaXa,  double * FbXb,
-    double * sa,    double * sb,
-    double * Fa,    double * Fb,
-    double * F2a,   double * F2b,
-    double * Fmpa,  double * Fmpb,
-    double * FA,    double * FB,
-    double * dEdFa, double * dEdFb,
-    int    * alo,   int    * alv, double * pmmm,
+void Heff(double * dEdFa, double * dEdFb,
+    double * Fa,  double * Fb,
+    double * F2a, double * F2b,
+    double * FA,  double * FB,
+    int * alo, int * alv, double * pmmm,
     basis * bo, basis * bv, mol * m, qmdata * qmd){
 
   int Mo = bo->M;
   int Mv = bv->M;
-
-  dEdF(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fmpa, Fmpb, dEdFa, dEdFb, alo, bo, bv, qmd);
 
   for(int u1=0; u1<Mo; u1++){
     int ku1 = bo->k[u1];
@@ -149,16 +142,19 @@ void Heff_test(int Na, int Nb,
   double * dEdFa = malloc(sizeof(double)*Mo*Mv);
   double * dEdFb = malloc(sizeof(double)*Mo*Mv);
   double E1, E2, e1, e2, de;
+  double d = 1e-4;
   D_eq9  (Na, Mo, Ca, Da);
   D_eq9  (Nb, Mo, Cb, Db);
   F_eq4  (Da,Db, H, Fa,Fb, alo, mmmm, bo,m,qmd);
   F2_8_7_14_15_6(Da, Db, Hmp, Fmpa, Fmpb, Xa, Xb, FaXa, FbXb, sa, sb, F2a, F2b, alo, alv, pmmm, bo, bv, m, qmd);
-  Heff   (Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fa, Fb, F2a, F2b, Fmpa, Fmpb, FA, FB, dEdFa, dEdFb, alo, alv, pmmm, bo, bv, m, qmd);
+  dEdF(Da, Db, Xa, Xb, FaXa, FbXb, sa, sb, Fmpa, Fmpb, dEdFa, dEdFb, alo, bo, bv, qmd);
+  Heff   (dEdFa, dEdFb, Fa, Fb, F2a, F2b, FA, FB, alo, alv, pmmm, bo, bv, m, qmd);
   mx_nosym_print(Mo, FA, stdout);
+  int n = 0;
+  int N = 0;
   for(int u=0; u<Mo; u++){
     for(int v=u; v<Mo; v++){
       int i = mpos(u,v);
-      double d = 1e-4;
       double D = Da[i];
       Da[i] = D+d;
       F_eq4 (Da,Db, H, Fa,Fb, alo, mmmm, bo,m,qmd);
@@ -179,8 +175,13 @@ void Heff_test(int Na, int Nb,
       }
       printf("%2d,%2d:   0=  % lf  a=  % lf  n=  % lf  a-n=  % .1e  n-0=  % .1e  a-0=  % .1e\n",
           u, v, Fa[i]+F2a[i], FA[i], de, FA[i]-de, de-Fa[i]-F2a[i], FA[i]-Fa[i]-F2a[i]);
+      N++;
+      if(fabs(FA[i]-de)>1e-8){
+        n++;
+      }
     }
   }
+  printf("%d/%d\n\n", n, N);
   free(Da);
   free(Db);
   free(Fa);

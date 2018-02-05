@@ -67,34 +67,23 @@ static inline void F2_8_7_14_15_6(
   return;
 }
 
-void Heff(double * Da, double * Db,
+void dEdF(double * Da, double * Db,
     double * Xa,    double * Xb,
     double * FaXa,  double * FbXb,
     double * sa,    double * sb,
-    double * Fa,    double * Fb,
-    double * F2a,   double * F2b,
     double * Fmpa,  double * Fmpb,
-    double * FA,    double * FB,
     double * dEdFa, double * dEdFb,
-    int    * alo,   int    * alv, double * pmmm,
+    int    * alo, basis * bo, basis * bv, qmdata * qmd);
+
+void Heff(double * dEdFa, double * dEdFb,
+    double * Fa,  double * Fb,
+    double * F2a, double * F2b,
+    double * FA,  double * FB,
+    int * alo, int * alv, double * pmmm,
     basis * bo, basis * bv, mol * m, qmdata * qmd);
 
 void Heff_test(int Na, int Nb,
     double * Ca, double * Cb, double * H, double * Hmp,
     int * alo, int * alv, double * mmmm, double * pmmm,
-    basis * bo, basis * bv, mol * m, qmdata * qmd);
-
-void Deff(double * Da, double * Db,
-    double * Xa,   double * Xb,
-    double * FaXa, double * FbXb,
-    double * sa,   double * sb,
-    double * Fmpa, double * Fmpb,
-    double * Dmp,
-    int * alo, basis * bo, basis * bv, qmdata * qmd);
-
-void Deff_test(int Na, int Nb,
-    double * Ca,  double * Cb,
-    double * Hmp, double * Dmp,
-    int * alo, int * alv, double * pmmm,
     basis * bo, basis * bv, mol * m, qmdata * qmd);
 
