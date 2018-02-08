@@ -2,7 +2,7 @@
 #include "eq.h"
 #include "matrix.h"
 
-void scf(int Na, int Nb, double * Ca, double * Cb,
+void scf(int Na, int Nb, double E0, double * Ca, double * Cb,
     double * Va, double * Vb,
     double * Da, double * Db, double * Dmp,
     int maxit, double dDmax, int * alo, int * alv,
@@ -31,7 +31,6 @@ void scf(int Na, int Nb, double * Ca, double * Cb,
   double * dEdFa = malloc(sizeof(double)*Mo*Mv);
   double * dEdFb = malloc(sizeof(double)*Mo*Mv);
 
-  double E0 = E0_eq2(m, qmd);
   double E1 = 0.0;
   double E2 = 0.0;
   double E  = E0+E1+E2;

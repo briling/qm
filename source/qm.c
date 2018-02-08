@@ -5,7 +5,7 @@
 #include "tools.h"
 #include "mytime.h"
 
-#define VERSION    "v180205"
+#define VERSION    "v180207"
 #define print_def  1
 #define dDmax_def  1e-13
 #define maxit_def  64
@@ -125,7 +125,8 @@ int main(int argc, char * argv[]){
 
   // ---------------------------------------------------------------------------
 
-  scf(Na, Nb, Ca, Cb, Va, Vb, Da, Db, Dmp, maxit, dDmax, alo, alv, H, Hmp, mmmm, pmmm, bo, bv, m, qmd, fo);
+  double E0 = E0_eq2(m, qmd);
+  scf(Na, Nb, E0, Ca, Cb, Va, Vb, Da, Db, Dmp, maxit, dDmax, alo, alv, H, Hmp, mmmm, pmmm, bo, bv, m, qmd, fo);
 
   double dip[3] = {0.0};
   dipole(Da, Db, Dmp, dip, alo, alv, bo, bv, m, qmd);
