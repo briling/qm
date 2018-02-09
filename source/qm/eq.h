@@ -33,6 +33,8 @@ double R0_eq39_mmmp_old(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu
 double R0_eq39_mmmm(int u, int v, int u1, int v1, int qu, int qu1, euler * z, basis * bo, qmdata * qmd);
 double R0_eq39_mmmp(int u, int v, int u1, int v1, int qu, int qu1, euler * z, basis * bo, basis * bv, qmdata * qmd);
 
+void dip_mm(double d[3], int mu, int mv, int lu, int lv, int qu, qmdata * qmd);
+void dip_pm(double d[3], int ma, int mv, int la, int lv, int qa, qmdata * qmd);
 int qlll_mm(int qu, int lu, int lv, int l, double * q, qmdata * qmd);
 int qlll_pm(int qu, int la, int lv, int l, double * q, qmdata * qmd);
 double fundconst(int l, int l1, int m);

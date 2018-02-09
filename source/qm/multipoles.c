@@ -3,6 +3,32 @@
 #include "vec3.h"
 #include "matrix.h"
 
+void dip_mm(double d[3], int mu, int mv, int lu, int lv, int qu, qmdata * qmd){
+  double q1uv;
+  if(! qlll_mm(qu, lu, lv, 1, &q1uv, qmd) ) {
+    r3set(d, 0.0);
+    return;
+  }
+  d[0] = B(lu,lv,1,mu,mv, 1);
+  d[1] = B(lu,lv,1,mu,mv,-1);
+  d[2] = B(lu,lv,1,mu,mv, 0);
+  r3scal(d, -SQRT3*q1uv);
+  return;
+}
+
+void dip_pm(double d[3], int ma, int mv, int la, int lv, int qa, qmdata * qmd){
+  double q1av;
+  if(! qlll_pm(qa, la, lv, 1, &q1av, qmd) ) {
+    r3set(d, 0.0);
+    return;
+  }
+  d[0] = B(la,lv,1,ma,mv, 1);
+  d[1] = B(la,lv,1,ma,mv,-1);
+  d[2] = B(la,lv,1,ma,mv, 0);
+  r3scal(d, -SQRT3*q1av);
+  return;
+}
+
 int qlll_mm(int qu, int lu, int lv, int l, double * q, qmdata * qmd){
   if(l==0){
     *q = 1.0;
@@ -84,8 +110,8 @@ void dipole(double * Da, double * Db, double * Dmp,
 
   r3set(dip, 0.0);
   for(int k=0; k<m->n; k++){
-    int Q = m->q[k];
-    double z = nel(Q, qmd);
+    int qk = m->q[k];
+    double z = nel(qk, qmd);
     for(int v=alo[k]; v<alo[k+1]; v++){
       int lv = bo->l[v];
       int mv = bo->m[v];
@@ -93,26 +119,19 @@ void dipole(double * Da, double * Db, double * Dmp,
       for(int u=alo[k]; u<v; u++){ // if u==v -> lu==lv -> B(lu,lv,1)==0
         int lu = bo->l[u];
         int mu = bo->m[u];
-        double q;
-        if(! qlll_mm(Q, lu, lv, 1, &q, qmd) ) continue;
-        double b[3];
-        b[0] = B(lu,lv,1,mu,mv, 1);
-        b[1] = B(lu,lv,1,mu,mv,-1);
-        b[2] = B(lu,lv,1,mu,mv, 0);
         int uv = mpos(u,v);
-        r3adds(dip, b, -2.0*SQRT3 * q * (Da[uv]+Db[uv]));
+        double duv[3];;
+        dip_mm(duv, mu, mv, lu, lv, qk, qmd);
+        r3adds(dip, duv, 2.0*(Da[uv]+Db[uv]));
       }
       // min-pol dip.:
       for(int a=alv[k]; a<alv[k+1]; a++){
         int la = bv->l[a];
         int ma = bv->m[a];
-        double q;
-        if(! qlll_pm(Q, la, lv, 1, &q, qmd) ) continue;
-        double b[3];
-        b[0] = B(la,lv,1,ma,mv, 1);
-        b[1] = B(la,lv,1,ma,mv,-1);
-        b[2] = B(la,lv,1,ma,mv, 0);
-        r3adds(dip, b, -SQRT3 * q * Dmp[a*bo->M+v]);
+        int av = a*bo->M+v;
+        double dav[3];
+        dip_pm(dav, ma, mv, la, lv, qk, qmd);
+        r3adds(dip, dav, Dmp[av]);
       }
       // mono:
       int vv = mpos(v,v);
