@@ -20,7 +20,8 @@ W= -Wall -Wextra \
    -Wunused-parameter\
    -Wunused\
 
-CFLAGS= -c -MMD $(OPT) $(GPROF) $(W) $(GDB)
+VFLAGS= -DVERSION='"$(shell cat version.txt)"'
+CFLAGS= -c -MMD $(OPT) $(GPROF) $(W) $(GDB) $(VFLAGS)
 OFLAGS= -lm $(GPROF)
 INCL= -I$(SRCDIR)/mol -I$(SRCDIR)/math -I$(SRCDIR)/qm
 
