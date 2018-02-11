@@ -85,8 +85,8 @@ void FX(int Mo, int Mv, double * Fa, double * Fb, double * Xa, double * Xb, doub
 }
 
 void F2_eq6(int Mo, double * FaXa, double * FbXb, double * sa, double * sb, double * F2a, double * F2b){
-  for(int v=0;v<Mo;v++){
-    for(int u=0;u<=v;u++){
+  for(int v=0; v<Mo; v++){
+    for(int u=0; u<=v; u++){
       int uv_sym = mpos(u,v);
       int uv = Mo*u+v;
       int vu = Mo*v+u;
@@ -175,7 +175,7 @@ void F_eq8(double * Da, double * Db,
   return;
 }
 
-void s_eq15(double Mv, double * X, double * s, int * alo, basis * bo, mol * m, qmdata * qmd){
+void s_eq15(int Mv, double * X, double * s, int * alo, basis * bo, mol * m, qmdata * qmd){
   int Mo = bo->M;
   // eq14:
   for(int u=0; u<Mo; u++){
@@ -190,7 +190,7 @@ void s_eq15(double Mv, double * X, double * s, int * alo, basis * bo, mol * m, q
   for(int ku=0; ku<m->n; ku++){
     int q = m->q[ku];
     int l = qmd->Lo[q];
-    for(int lu=0;  lu<=l; lu++){
+    for(int lu=0; lu<=l; lu++){
       double t = 0.0;
       int bra = alo[ku] +  lu   * lu;
       int ket = alo[ku] + (lu+1)*(lu+1);

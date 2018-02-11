@@ -17,7 +17,7 @@ void X_eq7(double * Fa, double * Fb, double * Xa, double * Xb, basis * bo, basis
 void FX(int Mo, int Mv, double * Fa, double * Fb, double * Xa, double * Xb, double * FaXa, double * FbXb);
 void F_eq8(double * Da, double * Db, double * H, double * Fa, double * Fb, int * alo, int * alv, double * pmmm, basis * bo, basis * bv, mol * m, qmdata * qmd);
 void D_eq9(int N, int M, double * C, double * D);
-void s_eq15(double Mv, double * X, double * s, int * alo, basis * bo, mol * m, qmdata * qmd);
+void s_eq15(int Mv, double * X, double * s, int * alo, basis * bo, mol * m, qmdata * qmd);
 
 void H_eq22_mm(double * f, double * H, int * alo, double * mmmm, basis * bo, mol * m, qmdata * qmd);
 void H_eq22_mp(double * f, double * H, int * alo, int * alv, double * pmmm, basis * bo, basis * bv, mol * m, qmdata * qmd);
