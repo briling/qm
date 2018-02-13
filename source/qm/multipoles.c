@@ -116,7 +116,7 @@ void dipole(double * Da, double * Db, double * Dmp,
       int lv = bo->l[v];
       int mv = bo->m[v];
       // min-min dip.:
-      for(int u=alo[k]; u<v; u++){ // if u==v -> lu==lv -> B(lu,lv,1)==0
+      for(int u=alo[k]; u<v; u++){ // if u==v -> lu==lv -> B(lu,lv,1)==0 -> duv==0
         int lu = bo->l[u];
         int mu = bo->m[u];
         int uv = mpos(u,v);

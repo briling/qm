@@ -40,6 +40,10 @@ int qlll_pm(int qu, int la, int lv, int l, double * q, qmdata * qmd);
 double fundconst(int l, int l1, int m);
 void dipole(double * Da, double * Db, double * Dmp, double dip[3], int * alo, int * alv, basis * bo, basis * bv, mol * m, qmdata * qmd);
 
+double E0_ext (double field[3], mol * m, qmdata * qmd);
+void   H_ext  (double field[3], double * F, int * alo, basis * bo, mol * m, qmdata * qmd);
+void   Hmp_ext(double field[3], double * F, int * alo, int * alv, basis * bo, basis * bv, mol * m, qmdata * qmd);
+
 double F_eq47    (int fbi,  int lu,  int lv, int qu, int qv, double r, qmdata * qmd);
 double F_eq48    (int f1bi, int la,  int lv, int qa, int qv, double r, qmdata * qmd);
 double V_eq49_mm (int ubi,  int lu,  int lv, int qu, int qk, double r, qmdata * qmd);
