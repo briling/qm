@@ -26,6 +26,7 @@ make test
 * `print:%d`  – printing options (1 – default, 2 – print scf vectors, 3 – print atomic charges and bond orders)
 * `read:%s`   – file name for reading scf vectors
 * `write:%s`  – file name for saving scf vectors
+* `field:%lf,%lf,%lf` – applied electric field ![nabla phi](https://latex.codecogs.com/gif.latex?\inline \nabla\phi=-\vec E)
 
 ---
 
@@ -66,5 +67,5 @@ K. R. Briling, [J. Chem. Phys.][B2017] **147**, 157101 (2017).
 [L2011]:https://doi.org/10.1063/1.3646498
 [B2017]:https://doi.org/10.1063/1.5000525
 
-<a href="http://m.maploco.com/details/9af5rrkn"> <img src="http://www.maploco.com/vmap/s/9693527.png" width=1 > </a>
+<a href="http://m.m111aploco.com/details/9af5rrkn"> <img src="http://www.maploco.com/vmap/s/9693527.png" width=1 > </a>
 
