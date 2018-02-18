@@ -1,11 +1,11 @@
  Priroda 11 (2011.08.21)
  copyright (c) D.N. Laikov
 
- date: Tue Sep  5 03:41:03 2017
+ date: Sun Feb 18 23:03:56 2018
 
  node  0: 'hghscncs'
 
- Memory: 64m + 256m (64m + 256m)
+ Memory: 32m + 32m (32m + 32m)
 
 
  molecule input: ''
@@ -56,10 +56,10 @@ eng>$end
  Memory used =     7432 KB
   Disk  used =     4567 KB,          4567 KB written,         4548 KB read
 
- CPU  time =    0.06 sec =  0.00 min = 0.00 hr =     inf%
- REAL time =    0.00 sec =  0.00 min = 0.00 hr
- ratio     =     inf%
+ CPU  time =    0.07 sec =  0.00 min = 0.00 hr =    7.14%
+ REAL time =    1.00 sec =  0.02 min = 0.00 hr
+ ratio     =    7.14%
 
- date: Tue Sep  5 03:41:03 2017
+ date: Sun Feb 18 23:03:57 2018
 
  time: Energy                           :     0.0 100.0%     0.0

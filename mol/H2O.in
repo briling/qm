@@ -1,4 +1,4 @@
-$system mem=64 disk=-256 $end
+$system mem=32 disk=-32 $end
 $control
  task=energy
  theory=qm
