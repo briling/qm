@@ -26,7 +26,7 @@ make test
 * `print:%d`  – printing options (1 – default, 2 – print scf vectors, 3 – print atomic charges and bond orders)
 * `read:%s`   – file name for reading scf vectors
 * `write:%s`  – file name for saving scf vectors
-* `field:%lf,%lf,%lf` – applied electric field ![nabla phi](https://latex.codecogs.com/gif.latex?\inline \nabla\phi=-\vec E)
+* `field:%lf,%lf,%lf` – applied electric field (with the opposite sign), ![nabla phi](https://latex.codecogs.com/gif.latex?\inline \nabla\phi\equiv-\vec E)
 
 ---
 
@@ -47,6 +47,9 @@ corresponding output files from our program.
 `mol/*.p11.out` –
 corresponding output files from Priroda-11
 (we used `bin/p1` \[[1a]\]).
+
+`mol/*.p17.out` –
+corresponding output files from Priroda-17.
 
 ---
 
