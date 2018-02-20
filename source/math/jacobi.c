@@ -1,4 +1,3 @@
-
 #include "matrix.h"
 #include "mytime.h"
 
@@ -90,5 +89,6 @@ void jacobi(double * a, double * b, double * d,
     fprintf(f, "a_ij < epsilon: %d/%d\n\n", r, R);
     fflush(f);
   }
+  return;
 }
 

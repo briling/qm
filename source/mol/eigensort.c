@@ -6,9 +6,8 @@ typedef struct{
   double * vector;
 } eigstr;
 
-static int cmpev(const void *p1, const void *p2){
-  double d;
-  d = (*((eigstr *)p1)).value - (*((eigstr *)p2)).value;
+static int cmpev(const void * p1, const void * p2){
+  double d = (*((eigstr *)p1)).value - (*((eigstr *)p2)).value;
   if (d > 0)
     return  1;
   else if (d < 0)
