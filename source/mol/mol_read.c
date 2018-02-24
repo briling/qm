@@ -1,6 +1,5 @@
-
 #include "mol.h"
-#include "3d.h"
+#include "vecn.h"
 
 #define N 2
 #define C 8
