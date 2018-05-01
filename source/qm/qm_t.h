@@ -127,7 +127,7 @@ typedef struct{
 
 
 typedef struct{
-  int   M;
+  unsigned int M;
   int * Q;  // charge
   int * m;  // azimuthal
   int * l;  // angular

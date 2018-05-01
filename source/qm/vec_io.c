@@ -1,30 +1,62 @@
 #include "matrix.h"
 #include "qm.h"
+#include <stdint.h>
 
-static void vecarrange(unsigned int n, double * Ca, double * Ct, basis * bo){
-  mx_transpcp(n, Ct, Ca);
+/* In sake of compatibility with Priroda,
+ * we change the order of basis functions
+ * when working with MO coefficient files.
+ *
+ * order in this program (m) | order in file (m1)
+ *                           |
+ * -- s shell :) --------------------------------
+ *              0            |        0
+ * -- p shell -----------------------------------
+ *             -1            |        0
+ *              0            |       +1
+ *             +1            |       -1
+ * -- d shell -----------------------------------
+ *             -2            |        0
+ *             -1            |       +1
+ *              0            |       -1
+ *             +1            |       +2
+ *             +2            |       -2
+ * ----------------------------------------------
+ *
+ * convert from file:  veccp( n, C + n*(i+(m1-m)), Ct + n*i );
+ * convert to file:    veccp( n, Ct + n*i, C + n*(i+(m1-m)) );
+ *
+ * we can create an array of m1's:
+ * n     : 0,  1,  2,  3,  4,  5  ...
+ * M1[n] : 0, +1, -1, +2, -2, +3, ...
+ * and take values m1 = M1[l+m],
+ * but they can be calculated:
+ * M1[n] = n%2 ? (n+1)/2 : -(n+1)/2
+ */
+
+#define M1(N) ((N)%2 ? ((N)+1)/2 : -((N)+1)/2)
+
+static void vec_to_p(unsigned int n, double * Ct, double * C, basis * bo){
+  mx_transp(n, C);
   for(unsigned int i=0; i<n; i++){
-    switch(bo->l[i]){
-      case 0:
-        veccp(n, Ca+n*i, Ct+n*i);
-        break;
-      case 1:
-        switch(bo->m[i]){
-          case -1:
-            veccp(n, Ca+n*(i+1), Ct+n*i);
-            break;
-          case  0:
-            veccp(n, Ca+n*(i+1), Ct+n*i);
-            break;
-          case  1:
-            veccp(n, Ca+n*(i-2), Ct+n*i);
-            break;
-        }
-        break;
-      default: GOTOHELL;
-    }
+    int l  = bo->l[i];
+    int m  = bo->m[i];
+    int m1 = M1(m+l);
+    veccp( n, Ct + n*i, C + n*(i+(m1-m)) );
   }
-  mx_transp(n, Ca);
+  mx_transp(n, Ct);
+  mx_transp(n, C);
+  return;
+}
+
+static void vec_from_p(unsigned int n, double * C, double * Ct, basis * bo){
+  mx_transp(n, Ct);
+  for(unsigned int i=0; i<n; i++){
+    int l  = bo->l[i];
+    int m  = bo->m[i];
+    int m1 = M1(m+l);
+    veccp( n, C + n*(i+(m1-m)), Ct + n*i );
+  }
+  mx_transp(n, C);
   return;
 }
 
@@ -36,7 +68,7 @@ int pvec_read(double * Va, double * Vb,
     return 0;
   }
 
-  int32_t n;
+  uint32_t n;
   if( !fread(&n, sizeof(n), 1, f) || n!=bo->M ){
     fclose(f);
     return 0;
@@ -44,16 +76,22 @@ int pvec_read(double * Va, double * Vb,
 
   size_t vsize = sizeof(double)*n;
   size_t csize = sizeof(double)*n*n;
-  if( !fread(Va, vsize, 1, f) || !fread(Ca, csize, 1, f) ||
-      !fread(Vb, vsize, 1, f) || !fread(Cb, csize, 1, f) ){
+  double * Cta = malloc(csize);
+  double * Ctb = malloc(csize);
+
+  if( !fread(Va, vsize, 1, f) || !fread(Cta, csize, 1, f) ||
+      !fread(Vb, vsize, 1, f) || !fread(Ctb, csize, 1, f) ){
+    free(Cta);
+    free(Ctb);
     fclose(f);
     return 0;
   }
 
-  double * Ct = malloc(csize);
-  vecarrange(n, Ca, Ct, bo);
-  vecarrange(n, Cb, Ct, bo);
-  free(Ct);
+  vec_from_p(n, Ca, Cta, bo);
+  vec_from_p(n, Cb, Ctb, bo);
+
+  free(Cta);
+  free(Ctb);
   fclose(f);
   return 1;
 }
@@ -66,24 +104,26 @@ int pvec_write(double * Va, double * Vb,
     return 0;
   }
 
-  int32_t n = bo->M;
+  uint32_t n = bo->M;
   size_t vsize = sizeof(double)*n;
   size_t csize = sizeof(double)*n*n;
+  double * Cta = malloc(csize);
+  double * Ctb = malloc(csize);
 
-  double * Ct = malloc(csize);
-  vecarrange(n, Ca, Ct, bo);
-  vecarrange(n, Ca, Ct, bo);
-  vecarrange(n, Cb, Ct, bo);
-  vecarrange(n, Cb, Ct, bo);
-  free(Ct);
+  vec_to_p(n, Cta, Ca, bo);
+  vec_to_p(n, Ctb, Cb, bo);
 
   if( !fwrite(&n, sizeof(n), 1, f) ||
-      !fwrite(Va, vsize, 1, f) || !fwrite(Ca, csize, 1, f) ||
-      !fwrite(Vb, vsize, 1, f) || !fwrite(Cb, csize, 1, f) ){
+      !fwrite(Va, vsize, 1, f) || !fwrite(Cta, csize, 1, f) ||
+      !fwrite(Vb, vsize, 1, f) || !fwrite(Ctb, csize, 1, f) ){
+    free(Cta);
+    free(Ctb);
     fclose(f);
     return 0;
   }
 
+  free(Cta);
+  free(Ctb);
   fclose(f);
   return 1;
 }
