@@ -33,7 +33,9 @@
  * M1[n] = n%2 ? (n+1)/2 : -(n+1)/2
  */
 
-#define M1(N) ((N)%2 ? ((N)+1)/2 : -((N)+1)/2)
+static inline int M1(int n){
+  return n%2 ? (n+1)/2 : -(n+1)/2;
+}
 
 static void vec_to_p(unsigned int n, double * Ct, double * C, basis * bo){
   mx_transp(n, C);
