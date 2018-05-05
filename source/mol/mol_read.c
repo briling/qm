@@ -18,8 +18,7 @@ static mol * redm(mol * m){
              sizeof(int    ) * c     + // k
              sizeof(int    ) * c     ; // b
 
-  mol * tm;
-  tm = (mol *) malloc (size);
+  mol * tm = malloc(size);
 
   tm->n = n;
   tm->c = c;
@@ -46,7 +45,7 @@ static mol * redm(mol * m){
 
 static mol * expm(mol * m){
 
-  int so   = m->n;
+  int so = m->n;
   int sn;
   if (so == 0){
     sn = N;
@@ -75,7 +74,7 @@ static mol * expm(mol * m){
              sizeof(int    ) * zn     + // k
              sizeof(int    ) * zn     ; // b
 
-  m = (mol *) realloc (m, size );
+  m = realloc (m, size );
   m->s = (styp   *)(m    +  1  );
   m->q = (int    *)(m->s + sn  );
   m->m = (double *)(m->q + sn  );
@@ -169,8 +168,8 @@ mol * mol_read(FILE * f){
     }
   }
 
-  m = (mol *)malloc(sizeof(mol));
-  m = (mol *)memset(m, 0, sizeof(mol));
+  m = malloc(sizeof(mol));
+  m = memset(m, 0, sizeof(mol));
   m = expm(m);
 
   n = 0;
@@ -179,7 +178,7 @@ mol * mol_read(FILE * f){
   while (fscanf(f, " $%256s", s) != 1){
     if (zcf == 0){
       if (fscanf(f, "%d%lf%lf%lf", &q, r, r+1, r+2) != 4){
-        if ( fscanf(f, " %[^\n]", s)  && strstr(s, "set")){
+        if ( fscanf(f, " %[^\n]", s) && strstr(s, "set")){
           continue;
         }
         goto hell;
@@ -189,23 +188,21 @@ mol * mol_read(FILE * f){
       char   sc;
       int    a1, a2, a3;
       double ab, ac, az;
-      if(n == 0){
-        sc = (fscanf(f, "%d", &q) != 1);
+      switch(n){
+        case 0:
+          sc = (fscanf(f, "%d", &q) != 1);
+          break;
+        case 1:
+          sc = (fscanf(f, "%d%d%lf", &q, &a1, &ab) != 3);
+          break;
+        case 2:
+          sc = (fscanf(f, "%d%d%lf%d%lf", &q, &a1, &ab, &a2, &ac) != 5);
+          break;
+        default:
+          sc = (fscanf(f, "%d%d%lf%d%lf%d%lf", &q, &a1, &ab, &a2, &ac, &a3, &az) != 7);
+          break;
       }
-      else if(n == 1){
-        sc = (fscanf(f, "%d%d%lf", &q, &a1, &ab) != 3);
-      }
-      else if(n == 2){
-        sc = (fscanf(f, "%d%d%lf%d%lf", &q, &a1, &ab, &a2, &ac) != 5);
-      }
-      else{
-        sc = (fscanf(f, "%d%d%lf%d%lf%d%lf",
-              &q, &a1, &ab, &a2, &ac, &a3, &az) != 7);
-      }
-      if(sc){
-        goto hell;
-      }
-      if (zmat2cart(n, m->r, r, a1-1, a2-1, a3-1, ab, ac*rd, az*rd)){
+      if(sc || zmat2cart(n, m->r, r, a1-1, a2-1, a3-1, ab, ac*rd, az*rd)){
         goto hell;
       }
     }
@@ -245,7 +242,7 @@ mol * mol_read(FILE * f){
       } while((char)getc(f)==',');
     }
 
-  n++;
+    n++;
   }
 
   m->l[n] = c;
