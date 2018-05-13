@@ -8,7 +8,7 @@ see \[[2]\] for details.
 ### requirements
 * `GNU/Linux` or `Cygwin`
 * `make`
-* `gcc`
+* `gcc >= 4.7`
 
 ### build
 ```

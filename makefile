@@ -9,7 +9,6 @@ W= -Wall -Wextra \
    -Wfloat-equal\
    -Wimplicit\
    -Wmaybe-uninitialized\
-   -Wmisleading-indentation\
    -Wmissing-braces\
    -Wparentheses\
    -Wsequence-point\
@@ -20,8 +19,9 @@ W= -Wall -Wextra \
    -Wunused-parameter\
    -Wunused\
 
+STDFLAG= -std=gnu11   # -std=gnu99 can be used
 VFLAGS= -DVERSION='"$(shell cat version.txt)"'
-CFLAGS= -c -MMD $(OPT) $(GPROF) $(W) $(GDB) $(VFLAGS)
+CFLAGS= -c $(STDFLAG) -MMD $(OPT) $(GPROF) $(W) $(GDB) $(VFLAGS)
 OFLAGS= -lm $(GPROF)
 INCL= -I$(SRCDIR)/mol -I$(SRCDIR)/math -I$(SRCDIR)/qm
 
