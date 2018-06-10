@@ -25,22 +25,6 @@ void mo_table(int N, double * V, double * C, basis * b, FILE * fo){
   return;
 }
 
-void spin2(int M, int Na, int Nb, double * Ca, double * Cb, FILE * fo){
-  double * Sab = malloc(M*M*sizeof(double));
-  mx_multtrmx (M, Sab, Ca, Cb);
-  int Nu = Na-Nb;
-  double s0 = Nu*0.5*(Nu*0.5+1.0);
-  double ds = Nb;
-  for(int i=0; i<Na; i++){
-    for(int j=0; j<Nb; j++){
-      ds -= Sab[i*M+j]*Sab[i*M+j];
-    }
-  }
-  fprintf(fo, " <S^2> :  %.4lf / %.4lf\n\n", s0+ds, s0);
-  free(Sab);
-  return;
-}
-
 void population(double * Da, double * Db, int * alo, mol * m, qmdata * qmd, FILE * fo){
 
   fprintf(fo, "charges:\n");
@@ -70,5 +54,11 @@ void population(double * Da, double * Db, int * alo, mol * m, qmdata * qmd, FILE
     }
   }
   fprintf(fo, "\n");
+}
+
+double * Sab_fill(int M, double * Ca, double * Cb){
+  double * Sab = malloc(M*M*sizeof(double));
+  mx_multtrmx (M, Sab, Ca, Cb);
+  return Sab;
 }
 

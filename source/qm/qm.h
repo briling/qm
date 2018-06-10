@@ -12,8 +12,10 @@ int pvec_read (double * Va, double * Vb, double * Ca, double * Cb, const char s[
 int pvec_write(double * Va, double * Vb, double * Ca, double * Cb, const char s[], basis * bo);
 
 void mo_table(int N, double * V, double * C, basis * b, FILE * fo);
-void spin2(int M, int Na, int Nb, double * Ca, double * Cb, FILE * fo);
 void population(double * Da, double * Db, int * alo, mol * m, qmdata * qmd, FILE * fo);
+double * Sab_fill(int M, double * Ca, double * Cb);
+
+void s2uhf(int M, int Na, int Nb, double * Sab, FILE * fo);
 
 void scf(int Na, int Nb, double E0, double * Ca, double * Cb,
     double * Va, double * Vb,

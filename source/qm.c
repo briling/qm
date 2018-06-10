@@ -130,7 +130,9 @@ int main(int argc, char * argv[]){
   double dip[3] = {0.0};
   dipole(Da, Db, Dmp, dip, alo, alv, bo, bv, m, qmd);
   fprintf(fo, " dipole: %+10lf %+10lf %+10lf\n", dip[0], dip[1], dip[2]);
-  spin2(Mo, Na, Nb, Ca, Cb, fo);
+
+  double * Sab = Sab_fill(Mo, Ca, Cb);
+  s2uhf(Mo, Na, Nb, Sab, fo);
 
   if(print > 1){
     fprintf(fo, "  alpha:\n");
@@ -149,6 +151,7 @@ int main(int argc, char * argv[]){
   if(vo[0] && pvec_write(Va, Vb, Ca, Cb, vo, bo)){
     fprintf(fo, " wrote coefficients to '%s'\n\n", vo);
   }
+  fflush(fo);
 
 #if 0
   Deff_test(Na, Nb, Ca, Cb, Hmp, Dmp, alo, alv, pmmm, bo, bv, m, qmd);
