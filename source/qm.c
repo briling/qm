@@ -19,22 +19,31 @@ int main(int argc, char * argv[]){
   double dDmax = dDmax_def;
   int    maxit = maxit_def;
   int    print = print_def;
-  char   vi[256] = {0};
-  char   vo[256] = {0};
+  char   vi[256]  = {0};
+  char   vo[256]  = {0};
+  int    ffield   =  0;
+  double field[3] = {0};
   FILE * fo = stdout;
   for(int i=3; i<argc; i++){
-    if( sscanf (argv[i], "conv:%lf", &dDmax ) ) continue;
-    if( sscanf (argv[i], "it:%d",    &maxit ) ) continue;
-    if( sscanf (argv[i], "print:%d", &print ) ) continue;
-    if( sscanf (argv[i], "read:%s",  &vi    ) ) continue;
-    if( sscanf (argv[i], "write:%s", &vo    ) ) continue;
+    if( sscanf (argv[i], "conv:%lf", &dDmax ) ) { continue; }
+    if( sscanf (argv[i], "it:%d",    &maxit ) ) { continue; }
+    if( sscanf (argv[i], "print:%d", &print ) ) { continue; }
+    if( sscanf (argv[i], "read:%s",  &vi    ) ) { continue; }
+    if( sscanf (argv[i], "write:%s", &vo    ) ) { continue; }
+    if( (ffield = sscanf (argv[i], "field: %lf,%lf,%lf", field, field+1, field+2))) { continue; }
     if(! (fo = fopen(argv[i], "w"))){
       fo = stdout;
     }
   }
-  fprintf(fo, "\n"VERSION"\n");
+  if(ffield!=3){
+    ffield = 0;
+  }
+  fprintf(fo, "\nv"VERSION"\n");
   fprintf(fo, "conv:%e\n", dDmax);
   fprintf(fo, "it:%d\n",   maxit);
+  if(ffield){
+    fprintf(fo, "field:%e,%e,%e\n", field[0], field[1], field[2]);
+  }
 
   qmdata * qmd = qmdata_read(fp);
   fclose(fp);
@@ -125,6 +134,13 @@ int main(int argc, char * argv[]){
   // ---------------------------------------------------------------------------
 
   double E0 = E0_eq2(m, qmd);
+
+  if(ffield){
+    H_ext(field, H, alo, bo, m, qmd);
+    Hmp_ext(field, Hmp, alo, alv, bo, bv, m, qmd);
+    E0 += E0_ext(field, m, qmd);
+  }
+
   scf(Na, Nb, E0, Ca, Cb, Va, Vb, Da, Db, Dmp, maxit, dDmax, alo, alv, H, Hmp, mmmm, pmmm, bo, bv, m, qmd, fo);
 
   double dip[3] = {0.0};

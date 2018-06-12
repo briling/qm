@@ -1,6 +1,10 @@
 for i in mol/*.in ; do
   echo $i;
-  ./qm qm_m.in $i ${i/\.in/.x.out1} print:3;
+  if [[ $i = *'.field.'* ]]; then
+    ./qm qm_m.in $i ${i/\.in/.x.out1} print:3 field:0.01,0.02,0.03;
+  else
+    ./qm qm_m.in $i ${i/\.in/.x.out1} print:3;
+  fi
 done
 
 for i in mol/*.x.out ; do
