@@ -38,7 +38,7 @@ int main(int argc, char * argv[]){
   if(ffield!=3){
     ffield = 0;
   }
-  fprintf(fo, "\nv"VERSION"\n");
+  fprintf(fo, "\n"VERSION"\n");
   fprintf(fo, "conv:%e\n", dDmax);
   fprintf(fo, "it:%d\n",   maxit);
   if(ffield){

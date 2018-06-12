@@ -8,6 +8,7 @@ for i in mol/*.in ; do
 done
 
 for i in mol/*.x.out ; do
+  echo $i;
   diff --suppress-common-lines --side-by-side --report-identical-files $i ${i}1 ;
 done
 
