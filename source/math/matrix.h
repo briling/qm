@@ -25,8 +25,12 @@ double * mx_sym_read    (unsigned int n, FILE   * f);
 
 void     mx_transp      (unsigned int n, double * a);
 void     mx_transpcp    (unsigned int n, double * p, double * a);
+void     mx_antisym     (unsigned int n, double * a);
 
 void     mx_multtrmx    (unsigned int n, double * p, double * a, double * b);
+double   mx_multtrmx_tr (unsigned int n, double * a, double * b);
+void     mx_symmultsymmx(unsigned int n, double * p, double * a, double * b);
 
+int      mx_inv         (unsigned int n, unsigned int r, double * b, double * a, double eps);
 void     jacobi         (double * a, double * b, double * d, unsigned int n, double eps, unsigned int rot, FILE * f);
 
