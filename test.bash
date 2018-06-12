@@ -1,9 +1,11 @@
 for i in mol/*.in ; do
   echo $i;
   if [[ $i = *'.field.'* ]]; then
-    ./qm qm_m.in $i ${i/\.in/.x.out1} print:3 field:0.01,0.02,0.03;
+    ./qm qm_m.in $i ${i/\.in/.x.out1} print:3 diis:0 field:0.01,0.02,0.03;
+    ./qm qm_m.in $i ${i/\.in/.diis.x.out1} print:3 field:0.01,0.02,0.03;
   else
-    ./qm qm_m.in $i ${i/\.in/.x.out1} print:3;
+    ./qm qm_m.in $i ${i/\.in/.x.out1} print:3 diis:0;
+    ./qm qm_m.in $i ${i/\.in/.diis.x.out1} print:3 ;
   fi
 done
 
