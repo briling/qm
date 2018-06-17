@@ -65,7 +65,7 @@ void mmmm6_add(int * alo, double * mmmm, double * rij, basis * bo, mol * m, qmda
         for(int u1=alo[ku1]; u1<alo[ku1+1]; u1++){
           int lu    = bo->l[u ];
           int lu1   = bo->l[u1];
-          double r  = rij[MPOSIF(ku, ku1)];
+          double r  = rij[mpos(ku, ku1)];
           double r6 = G6_eq53(lu, lu1, qu, qu1, r, qmd);
           int ind0  = mpos4( bo->n[u ], bo->n[u ], bo->n[u1], bo->n[u1], mo);
           int ind1  = mpos4( bo->n[u1], bo->n[u1], bo->n[u ], bo->n[u ], mo);
