@@ -6,12 +6,12 @@
 double R0_eq34_old(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu1, int lv1, int ku, mol * m, qmdata * qmd){
   double R00 = R00_eq35(mu,mv,mu1,mv1,lu,lv,lu1,lv1,m->q[ku],qmd);
   double R0k = 0.0;
-  for(int k=0; k<m->n; k++){
-    if(k==ku){
-      continue;
-    }
-    // eq36:
-    if( (mu==mv) && (mu1==mv1) && (lu==lv) && (lu1==lv1) ){
+  if( (mu==mv) && (mu1==mv1) && (lu==lv) && (lu1==lv1) ){
+    for(int k=0; k<m->n; k++){
+      if(k==ku){
+        continue;
+      }
+      // eq36:
       double r = sqrt(r3d2(m->r+3*ku, m->r+3*k));
       R0k += V_eq51(lu, lu1, m->q[ku], m->q[k], r, qmd);
     }
@@ -69,7 +69,7 @@ double R0_eq34(int u, int v, int u1, int v1, int ku, double * rij, basis * bo, m
   int lv1 = bo->l[v1];
   int qu  = bo->Q[u ];
   double R00 = R00_eq35(mu,mv,mu1,mv1,lu,lv,lu1,lv1,qu,qmd);
-  if( (mu!=mv) || (mu1!=mv1) || (lu!=lv) || (lu1!=lv1) ){
+  if( (u!=v) || (u1!=v1) ){
     return R00;
   }
   double R0k = 0.0;
