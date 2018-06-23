@@ -15,27 +15,19 @@ void H_eq22_mm(double * f, double * H, int * alo, double * mmmm, basis * bo, mol
   int Mo = bo->M;
   for(int ku=0; ku<m->n; ku++){
     for(int u=alo[ku]; u<alo[ku+1]; u++){
-      int nu  = bo->n[u ];
       for(int v=u; v<alo[ku+1]; v++){
         int uv = mpos(u,v);
-        int nv = bo->n[v ];
         double t = f[uv];
         for(int u1=0; u1<Mo; u1++){
-          int q1 = bo->Q[u1];
-          int l1 = bo->l[u1];
-          double p1 = qmd->p[q1*(qmd->nLo)+l1]/(2.0*l1+1.0);
-          int ll = qmd->nLo*qmd->nLo;
-          int l4 = ll*ll*ll*ll;
-          double r1 = 0.0;
-          double r2 = 0.0;
           int ku1 = bo->k[u1];
-          int nu1 = bo->n[u1];
-          int paind = (ku*m->n+ku1)*l4;
-          r1 = mmmm[paind + mpos4(nu,nv,nu1,nu1,ll)];
+          int qu1 = bo->Q[u1];
+          int lu1 = bo->l[u1];
+          double p1 = qmd->p[qu1*(qmd->nLo)+lu1]/(2.0*lu1+1.0);
+          double r  = R(u,v,u1,u1, mmmm, bo, m, qmd);
           if(ku==ku1){
-            r2 = mmmm[paind + mpos4(nu,nu1,nu1,nv,ll)];
+            r -= 0.5 * R(u,u1,u1,v, mmmm, bo, m, qmd);
           }
-          t -= (r1 - 0.5*r2) * p1;
+          t -= r * p1;
         }
         H[uv] = t;
       }
