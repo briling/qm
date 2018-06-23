@@ -30,8 +30,8 @@ double R00_eq35(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu1, int l
 
 double R0_eq39_mmmm_old(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double ruu1[3], qmdata * qmd);
 double R0_eq39_mmmp_old(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double ruu1[3], qmdata * qmd);
-double R0_eq39_mmmm(int u, int v, int u1, int v1, int qu, int qu1, euler * z, basis * bo, qmdata * qmd);
-double R0_eq39_mmmp(int u, int v, int u1, int v1, int qu, int qu1, euler * z, basis * bo, basis * bv, qmdata * qmd);
+double R0_eq39_mmmm(int u, int v, int u1, int v1, euler * z, basis * bo, qmdata * qmd);
+double R0_eq39_mmmp(int a, int v, int u1, int v1, euler * z, basis * bo, basis * bv, qmdata * qmd);
 
 void dip_mm(double d[3], int mu, int mv, int lu, int lv, int qu, qmdata * qmd);
 void dip_pm(double d[3], int ma, int mv, int la, int lv, int qa, qmdata * qmd);

@@ -126,7 +126,7 @@ double * mmmm0_fill(int * alo, double * rij, euler * z, basis * bo, mol * m, qmd
               int ind110 = mpos4(nv1, nu1, nu , nv , mo);
               int ind101 = mpos4(nu1, nv1, nv , nu , mo);
               int ind111 = mpos4(nv1, nu1, nv , nu , mo);
-              double r = R0_eq39_mmmm(u,v,u1,v1, m->q[k],m->q[k1], zuu1, bo,qmd);
+              double r = R0_eq39_mmmm(u,v,u1,v1, zuu1, bo,qmd);
               mmmm[paind0+ind000] = r;
               mmmm[paind0+ind010] = r;
               mmmm[paind0+ind001] = r;
@@ -167,7 +167,7 @@ double * pmmm_fill(int * alo, int * alv, euler * z, basis * bo, basis * bv, mol 
               int nv1  = bo->n[v1];
               int ind0 = mpos4(na, nv, nu1, nv1, mo);
               int ind1 = mpos4(na, nv, nv1, nu1, mo);
-              double r = R0_eq39_mmmp(a, v, u1, v1, m->q[k], m->q[k1], zuu1, bo, bv, qmd);
+              double r = R0_eq39_mmmp(a, v, u1, v1, zuu1, bo, bv, qmd);
               pmmm[paind+ind0] = r;
               pmmm[paind+ind1] = r;
             }
