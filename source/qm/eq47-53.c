@@ -105,6 +105,42 @@ double V_eq51(int lu, int lu1, int qu, int qk, double r, qmdata * qmd){
   return 0.0;
 }
 
+double G_eq52_mmmm(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double r, qmdata * qmd){
+  double q1,q2,q3;
+  if( ! qlll_mm(qu,  lu, lv, l,  &q1, qmd)) GOTOHELL;
+  if( ! qlll_mm(qu1, lu1,lv1,l1, &q2, qmd)) GOTOHELL;
+  q3 = fundconst(l, l1, m);
+  double au  = qmd->agb[qu*qmd->nLo+lu];
+  double av  = qmd->agb[qu*qmd->nLo+lv];
+  double au1 = qmd->agb[qu1*qmd->nLo+lu1];
+  double av1 = qmd->agb[qu1*qmd->nLo+lv1];
+  double q   = q1*q2*q3;
+  double aa  = au+av;
+  double aa1 = au1+av1;
+  double a   = aa*aa1/(aa+aa1);
+  if( (l==0) && (l1==0)){
+    return g_eq43_l0(r, q, a, -0.5);
+  }
+  else{
+    int aph = (l+m)%2?-1:1;
+    return aph*g_eq43_c0(l+l1, r, q, a);
+  }
+}
+
+double G_eq52_mmmp(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double q1, double q2, double r, qmdata * qmd){
+  double q3 = fundconst(l, l1, m);
+  double au  = qmd->ag1b[qu *qmd->nLv+lu ];
+  double av  = qmd->ag0b[qu *qmd->nLo+lv ];
+  double au1 = qmd->ag0b[qu1*qmd->nLo+lu1];
+  double av1 = qmd->ag0b[qu1*qmd->nLo+lv1];
+  double q   = q1*q2*q3;
+  double aa  = au+av;
+  double aa1 = au1+av1;
+  double a   = aa*aa1/(aa+aa1);
+  int    aph = (l+m)%2?-1:1;
+  return aph*g_eq43_c0(l+l1, r, q, a);
+}
+
 double G6_eq53(int lu, int lu1, int qu, int qu1, double r, qmdata * qmd){
   double au  = qmd->ag6[qu *qmd->nLo+lu ].a;
   double cu  = qmd->ag6[qu *qmd->nLo+lu ].c;

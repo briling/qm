@@ -44,13 +44,15 @@ double E0_ext (double field[3], mol * m, qmdata * qmd);
 void   H_ext  (double field[3], double * F, int * alo, basis * bo, mol * m, qmdata * qmd);
 void   Hmp_ext(double field[3], double * F, int * alo, int * alv, basis * bo, basis * bv, mol * m, qmdata * qmd);
 
-double F_eq47    (int fbi,  int lu,  int lv, int qu, int qv, double r, qmdata * qmd);
-double F_eq48    (int f1bi, int la,  int lv, int qa, int qv, double r, qmdata * qmd);
-double V_eq49_mm (int ubi,  int lu,  int lv, int qu, int qk, double r, qmdata * qmd);
-double V_eq49_mp (int ubi,  int lu,  int lv, int qu, int qk, double r, qmdata * qmd);
-double S_eq50    (int foi,  int lu,  int ld, int qu, int qd, double r, qmdata * qmd);
-double V_eq51    (int lu,   int lu1, int qu, int qk,  double r, qmdata * qmd);
-double G6_eq53   (int lu,   int lu1, int qu, int qu1, double r, qmdata * qmd);
+double F_eq47     (int fbi,  int lu,  int lv, int qu, int qv, double r, qmdata * qmd);
+double F_eq48     (int f1bi, int la,  int lv, int qa, int qv, double r, qmdata * qmd);
+double V_eq49_mm  (int ubi,  int lu,  int lv, int qu, int qk, double r, qmdata * qmd);
+double V_eq49_mp  (int ubi,  int lu,  int lv, int qu, int qk, double r, qmdata * qmd);
+double S_eq50     (int foi,  int lu,  int ld, int qu, int qd, double r, qmdata * qmd);
+double V_eq51     (int lu,   int lu1, int qu, int qk,  double r, qmdata * qmd);
+double G_eq52_mmmm(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double r, qmdata * qmd);
+double G_eq52_mmmp(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double q1, double q2, double r, qmdata * qmd);
+double G6_eq53    (int lu,   int lu1, int qu, int qu1, double r, qmdata * qmd);
 
 
 static inline void F2_8_7_14_15_6(
