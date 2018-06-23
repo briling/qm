@@ -1,6 +1,8 @@
 #include "eq.h"
 #include "matrix.h"
 
+#define EPS 1e-15
+
 double F_eq47(int fbi, int lu, int lv, int qu, int qv, double r, qmdata * qmd){
   double au = qmd->afb[qu*qmd->nLo+lu].a;  // TODO roots can be stored
   double av = qmd->afb[qv*qmd->nLo+lv].a;
@@ -87,7 +89,7 @@ double V_eq51(int lu, int lu1, int qu, int qk, double r, qmdata * qmd){
         (qmd->vb[i].lu1 != lu1) ){
       continue;
     }
-    if( fabs(qmd->vb[i].c0) > 1e-15){
+    if(fabs(qmd->vb[i].c0) > EPS){
       double au  = qmd->avb[qu*qmd->nLo+lu].a;
       double cu  = qmd->avb[qu*qmd->nLo+lu].c;
       double au1 = qmd->avb[qu*qmd->nLo+lu1].a;
