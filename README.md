@@ -26,7 +26,7 @@ make test
 * `print:%d`  – printing options (1 – default, 2 – print scf vectors, 3 – print atomic charges and bond orders)
 * `read:%s`   – file name for reading scf vectors
 * `write:%s`  – file name for saving scf vectors
-* `field:%lf,%lf,%lf` – applied electric field (with the opposite sign), ![nabla phi](https://latex.codecogs.com/gif.latex?\inline \nabla\phi\equiv-\vec E)
+* `field:%lf,%lf,%lf` – applied electric field (with the opposite sign), i.e. <img src="http://latex.codecogs.com/png.latex?\inline&space;\dpi{300}&space;\nabla\phi\equiv-\vec&space;E" title="\nabla\phi\equiv-\vec E" height="22" />
 
 ---
 
