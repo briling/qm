@@ -1,12 +1,15 @@
 for i in mol/*.in ; do
   echo $i;
   if [[ $i = *'.field.'* ]]; then
-    ./qm qm_m.in $i ${i/\.in/.x.out1} print:3 diis:0 field:0.01,0.02,0.03;
-    ./qm qm_m.in $i ${i/\.in/.diis.x.out1} print:3 field:0.01,0.02,0.03;
+    ./qm qm_m.in $i ${i/\.in/.nodiis.x.out1} print:3 diis:0 field:0.01,0.02,0.03;
+    ./qm qm_m.in $i ${i/\.in/.x.out1} print:3 field:0.01,0.02,0.03;
   else
-    ./qm qm_m.in $i ${i/\.in/.x.out1} print:3 diis:0;
-    ./qm qm_m.in $i ${i/\.in/.diis.x.out1} print:3 ;
+    ./qm qm_m.in $i ${i/\.in/.x.out1} print:3 ;
   fi
+done
+for i in mol/{CH2_m1,CH2_m3,phenylsilatrane,SudanBlackB}.in ; do
+  echo $i;
+  ./qm qm_m.in $i ${i/\.in/.nodiis.x.out1} print:3 diis:0 it:64;
 done
 
 for i in mol/*.x.out ; do
@@ -14,5 +17,5 @@ for i in mol/*.x.out ; do
   diff --suppress-common-lines --side-by-side --report-identical-files $i ${i}1 ;
 done
 
-rm mol/*.x.out1
+rm mol/*.out1
 
