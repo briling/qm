@@ -4,12 +4,11 @@
 #include "matrix.h"
 #include "2el.h"
 
-static double f_eq28_mm(int mu, int mv, int lu, int lv, int qu, int qv, euler * z, qmdata * qmd);
-static double f_eq28_mp(int ma, int mv, int la, int lv, int qa, int qv, euler * z, qmdata * qmd);
-static double f_eq30_mm(int mu, int mv, int lu, int lv, int qu, int qk, euler * z, qmdata * qmd);
-static double f_eq30_mp(int ma, int mv, int la, int lv, int qa, int qk, euler * z, qmdata * qmd);
-static double f_eq31(int mu, int mv, int lu, int lv, int qu, int qv, int qd, euler * zud, euler * zvd, qmdata * qmd);
-static double S_eq32(int mu, int md, int lu, int ld, int qu, int qd, euler * zud, qmdata * qmd);
+static double f_eq28_mm(int mu, int mv, int lu, int lv, int qu, int qv, axis * z, qmdata * qmd);
+static double f_eq28_mp(int ma, int mv, int la, int lv, int qa, int qv, axis * z, qmdata * qmd);
+static double f_eq30_mm(int mu, int mv, int lu, int lv, int qu, int qk, axis * z, qmdata * qmd);
+static double f_eq30_mp(int ma, int mv, int la, int lv, int qa, int qk, axis * z, qmdata * qmd);
+static double f_eq31(int mu, int mv, int lu, int lv, int qu, int qv, int qd, axis * zud, axis * zvd, qmdata * qmd);
 
 void H_eq22_mm(double * f, double * H, int * alo, double * mmmm, basis * bo, mol * m, qmdata * qmd){
   int Mo = bo->M;
@@ -75,7 +74,7 @@ void H_eq22_mp(double * f, double * H, int * alo, int * alv, double * pmmm, basi
   return;
 }
 
-void f_eq25_mm(double * f, euler * z, int * alo, basis * bo, mol * m, qmdata * qmd){
+void f_eq25_mm(double * f, axis * z, int * alo, basis * bo, mol * m, qmdata * qmd){
   for(int ku=0; ku<m->n; ku++){
     int qu = m->q[ku];
     for(int u=alo[ku]; u<alo[ku+1]; u++){
@@ -94,7 +93,7 @@ void f_eq25_mm(double * f, euler * z, int * alo, basis * bo, mol * m, qmdata * q
           if(k1==ku){
             continue;
           }
-          euler * zuk = z+(ku*m->n+k1);
+          axis * zuk = z+(ku*m->n+k1);
           fk += f_eq30_mm(mu,mv, lu,lv, qu, m->q[k1], zuk, qmd);
         }
         f[mpos(u,v)] = f0 + fk;
@@ -102,8 +101,8 @@ void f_eq25_mm(double * f, euler * z, int * alo, basis * bo, mol * m, qmdata * q
       // two-center
       for(int kv=ku+1; kv<m->n; kv++){
         int qv = m->q[kv];
-        euler * zuv = z+(ku*m->n+kv);
-        euler * zvu = z+(kv*m->n+ku);
+        axis * zuv = z+(ku*m->n+kv);
+        axis * zvu = z+(kv*m->n+ku);
         for(int v=alo[kv]; v<alo[kv+1]; v++){
           int lv = bo->l[v];
           int mv = bo->m[v];
@@ -119,8 +118,8 @@ void f_eq25_mm(double * f, euler * z, int * alo, basis * bo, mol * m, qmdata * q
             if( (k1==ku) || (k1==kv) ){
               continue;
             }
-            euler * zud = z+(ku*m->n+k1);
-            euler * zvd = z+(kv*m->n+k1);
+            axis * zud = z+(ku*m->n+k1);
+            axis * zvd = z+(kv*m->n+k1);
             fk += f_eq31(mu,mv, lu,lv, qu,qv, m->q[k1], zud,zvd, qmd);
           }
           f[mpos(u,v)] = f0+fk;
@@ -131,7 +130,7 @@ void f_eq25_mm(double * f, euler * z, int * alo, basis * bo, mol * m, qmdata * q
   return;
 }
 
-void f_eq25_mp(double * f, euler * z, int * alo, int * alv, basis * bo, basis * bv, mol * m, qmdata * qmd){
+void f_eq25_mp(double * f, axis * z, int * alo, int * alv, basis * bo, basis * bv, mol * m, qmdata * qmd){
   int Mo = bo->M;
   for(int ka=0; ka<m->n; ka++){
     int qa = m->q[ka];
@@ -147,7 +146,7 @@ void f_eq25_mp(double * f, euler * z, int * alo, int * alv, basis * bo, basis * 
           if(k1==ka){
             continue;
           }
-          euler * zak = z+(ka*m->n+k1);
+          axis * zak = z+(ka*m->n+k1);
           fk += f_eq30_mp(ma,mv, la,lv, qa, m->q[k1], zak, qmd);
         }
         f[a*Mo+v] = fk;
@@ -158,7 +157,7 @@ void f_eq25_mp(double * f, euler * z, int * alo, int * alv, basis * bo, basis * 
           continue;
         }
         int qv = m->q[kv];
-        euler * zav = z+(ka*m->n+kv);
+        axis * zav = z+(ka*m->n+kv);
         for(int v=alo[kv]; v<alo[kv+1]; v++){
           int lv = bo->l[v];
           int mv = bo->m[v];
@@ -170,7 +169,7 @@ void f_eq25_mp(double * f, euler * z, int * alo, int * alv, basis * bo, basis * 
   return;
 }
 
-static double f_eq28_mm(int mu, int mv, int lu, int lv, int qu, int qv, euler * z, qmdata * qmd){
+static double f_eq28_mm(int mu, int mv, int lu, int lv, int qu, int qv, axis * z, qmdata * qmd){
   double r = z->r;
   int qq  = mpos(qu,qv); // qu<=qv
   int bra = qmd->qq_list[qq-1].fb;
@@ -181,9 +180,9 @@ static double f_eq28_mm(int mu, int mv, int lu, int lv, int qu, int qv, euler * 
       int m     = qmd->fb[i].m;
       int aph   = (((lu+m)%2)?(-1):(1));
       double F  = F_eq47(i, lu, lv, qu, qv, r, qmd);
-      double AA = A_new(lu, m,mu,z) * A_new(lv, m,mv,z);
+      double AA = A(lu, m,mu,z) * A(lv, m,mv,z);
       if(m){
-        AA     += A_new(lu,-m,mu,z) * A_new(lv,-m,mv,z);
+        AA     += A(lu,-m,mu,z) * A(lv,-m,mv,z);
       }
       f0 += aph * F * AA;
     }
@@ -191,7 +190,7 @@ static double f_eq28_mm(int mu, int mv, int lu, int lv, int qu, int qv, euler * 
   return f0;
 }
 
-static double f_eq28_mp(int ma, int mv, int la, int lv, int qa, int qv, euler * z, qmdata * qmd){
+static double f_eq28_mp(int ma, int mv, int la, int lv, int qa, int qv, axis * z, qmdata * qmd){
   double r = z->r;
   int qq  = MPOSIF(qa,qv);
   int bra = qmd->qq_list[qq-1].f1b;
@@ -205,9 +204,9 @@ static double f_eq28_mp(int ma, int mv, int la, int lv, int qa, int qv, euler * 
       int m   = qmd->f1b[i].m;
       int aph = (((la+m)%2)?(-1):(1));
       double F = F_eq48(i, la,lv, qa,qv, r, qmd);
-      double AA = A_new(la, m,ma,z) * A_new(lv, m,mv,z);
+      double AA = A(la, m,ma,z) * A(lv, m,mv,z);
       if(m){
-        AA     += A_new(la,-m,ma,z) * A_new(lv,-m,mv,z);
+        AA     += A(la,-m,ma,z) * A(lv,-m,mv,z);
       }
       f0 += AA * F * aph;
     }
@@ -215,7 +214,7 @@ static double f_eq28_mp(int ma, int mv, int la, int lv, int qa, int qv, euler * 
   return f0;
 }
 
-static double S_eq32(int mu, int md, int lu, int ld, int qu, int qd, euler * zud, qmdata * qmd){
+double S_eq32(int mu, int md, int lu, int ld, int qu, int qd, axis * zud, qmdata * qmd){
   double r = zud->r;
   int qq  = MPOSIF(qu,qd);
   int bra = qmd->qq_list[qq-1].fo;
@@ -231,16 +230,16 @@ static double S_eq32(int mu, int md, int lu, int ld, int qu, int qd, euler * zud
     int m   = qmd->fo[i].m;
     int aph = (lu+m)%2?-1:1;
     double S  = S_eq50(i, lu, ld, qu, qd, r, qmd);
-    double AA = A_new(lu, m,mu,zud) * A_new(ld, m,md,zud);
+    double AA = A(lu, m,mu,zud) * A(ld, m,md,zud);
     if(m){
-      AA     += A_new(lu,-m,mu,zud) * A_new(ld,-m,md,zud);
+      AA     += A(lu,-m,mu,zud) * A(ld,-m,md,zud);
     }
     s += aph*AA*S;
   }
   return s;
 }
 
-static double f_eq30_mm(int mu, int mv, int lu, int lv, int qu, int qk, euler * z, qmdata * qmd){
+static double f_eq30_mm(int mu, int mv, int lu, int lv, int qu, int qk, axis * z, qmdata * qmd){
 
   if(lu>lv){
     int t;
@@ -263,8 +262,8 @@ static double f_eq30_mm(int mu, int mv, int lu, int lv, int qu, int qk, euler * 
       double V = V_eq49_mm(i,lu,lv,qu,qk,r,qmd);
       double AAB = 0.0;
       for(int m=-lb; m<=lb; m++){
-        double A1 = A_new(lu, m, mu, z);
-        double A2 = A_new(lv, m, mv, z);
+        double A1 = A(lu, m, mu, z);
+        double A2 = A(lv, m, mv, z);
         double B0 = B(l,lu,lv,0,m,m);
         AAB += A1*A2*B0;
       }
@@ -274,7 +273,7 @@ static double f_eq30_mm(int mu, int mv, int lu, int lv, int qu, int qk, euler * 
   return s;
 }
 
-static double f_eq30_mp(int ma, int mv, int la, int lv, int qa, int qk, euler * z, qmdata * qmd){
+static double f_eq30_mp(int ma, int mv, int la, int lv, int qa, int qk, axis * z, qmdata * qmd){
   double r = z->r;
   int qq   = MPOSIF(qk,qa);
   int bra  = qmd->qq_list[qq-1].u1b;
@@ -290,8 +289,8 @@ static double f_eq30_mp(int ma, int mv, int la, int lv, int qa, int qk, euler * 
       double V = V_eq49_mp(i,la,lv,qa,qk,r,qmd);
       double AAB = 0.0;
       for(int m=-lb; m<=lb; m++){
-        double A1 = A_new(la, m, ma, z);
-        double A2 = A_new(lv, m, mv, z);
+        double A1 = A(la, m, ma, z);
+        double A2 = A(lv, m, mv, z);
         double B0 = B(l,la,lv,0,m,m);
         AAB += A1*A2*B0;
       }
@@ -301,7 +300,7 @@ static double f_eq30_mp(int ma, int mv, int la, int lv, int qa, int qk, euler * 
   return s;
 }
 
-static double f_eq31(int mu, int mv, int lu, int lv, int qu, int qv, int qd, euler * zud, euler * zvd, qmdata * qmd){
+static double f_eq31(int mu, int mv, int lu, int lv, int qu, int qv, int qd, axis * zud, axis * zvd, qmdata * qmd){
   int Lp = qmd->Lp[qd];
   double s = 0.0;
   for(int ld=0; ld<=Lp; ld++){

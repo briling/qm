@@ -3,9 +3,9 @@
 #include "qm_t.h"
 #include "lowfunc.h"
 
-double A(int l, int m1, int m2, double z[3]);
-double A_new(int l, int m1, int m2, euler * eu);
-void distang(double * rij, euler * eu, mol * m);
+double A(int l, int m1, int m2, axis * xyz);
+double A_full(int l, int m1, int m2, double z[3]);
+void distang(double * rij, axis * eu, mol * m);
 
 double E0_eq2(mol * m, qmdata * qmd);
 double E1_eq3(int Mo, double * H, double * Da, double * Db, double * Fa, double * Fb);
@@ -21,8 +21,9 @@ void s_eq15(int Mv, double * X, double * s, int * alo, basis * bo, mol * m, qmda
 
 void H_eq22_mm(double * f, double * H, int * alo, double * mmmm, basis * bo, mol * m, qmdata * qmd);
 void H_eq22_mp(double * f, double * H, int * alo, int * alv, double * pmmm, basis * bo, basis * bv, mol * m, qmdata * qmd);
-void f_eq25_mm(double * f, euler * z, int * alo, basis * bo, mol * m, qmdata * qmd);
-void f_eq25_mp(double * f, euler * z, int * alo, int * alv, basis * bo, basis * bv, mol * m, qmdata * qmd);
+void f_eq25_mm(double * f, axis * z, int * alo, basis * bo, mol * m, qmdata * qmd);
+void f_eq25_mp(double * f, axis * z, int * alo, int * alv, basis * bo, basis * bv, mol * m, qmdata * qmd);
+double S_eq32(int mu, int md, int lu, int ld, int qu, int qd, axis * zud, qmdata * qmd);
 
 double R0_eq34_old(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu1, int lv1, int ku, mol * m, qmdata * qmd);
 double R0_eq34 (int u, int v, int u1, int v1, int ku, double * rij, basis * bo, mol * m, qmdata * qmd);
@@ -30,11 +31,11 @@ double R00_eq35(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu1, int l
 
 double R0_eq39_mmmm_old(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double ruu1[3], qmdata * qmd);
 double R0_eq39_mmmp_old(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double ruu1[3], qmdata * qmd);
-double R0_eq39_mmmm(int u, int v, int u1, int v1, euler * z, basis * bo, qmdata * qmd);
-double R0_eq39_mmmp(int a, int v, int u1, int v1, euler * z, basis * bo, basis * bv, qmdata * qmd);
+double R0_eq39_mmmm(int u, int v, int u1, int v1, axis * z, basis * bo, qmdata * qmd);
+double R0_eq39_mmmp(int a, int v, int u1, int v1, axis * z, basis * bo, basis * bv, qmdata * qmd);
 
 void dip_mm(double d[3], int mu, int mv, int lu, int lv, int qu, qmdata * qmd);
-void dip_pm(double d[3], int ma, int mv, int la, int lv, int qa, qmdata * qmd);
+int  dip_pm(double d[3], int ma, int mv, int la, int lv, int qa, qmdata * qmd);
 int qlll_mm(int qu, int lu, int lv, int l, double * q, qmdata * qmd);
 int qlll_pm(int qu, int la, int lv, int l, double * q, qmdata * qmd);
 double fundconst(int l, int l1, int m);
@@ -53,7 +54,6 @@ double V_eq51     (int lu,   int lu1, int qu, int qk,  double r, qmdata * qmd);
 double G_eq52_mmmm(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double r, qmdata * qmd);
 double G_eq52_mmmp(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double q1, double q2, double r, qmdata * qmd);
 double G6_eq53    (int lu,   int lu1, int qu, int qu1, double r, qmdata * qmd);
-
 
 static inline void F2_8_7_14_15_6(
     double * Da, double * Db,

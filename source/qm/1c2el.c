@@ -69,7 +69,7 @@ double R0_eq34(int u, int v, int u1, int v1, int ku, double * rij, basis * bo, m
   int lv1 = bo->l[v1];
   int qu  = bo->Q[u ];
   double R00 = R00_eq35(mu,mv,mu1,mv1,lu,lv,lu1,lv1,qu,qmd);
-  if( (u!=v) || (u1!=v1) ){
+  if(u!=v || u1!=v1){
     return R00;
   }
   double R0k = 0.0;

@@ -78,7 +78,7 @@ void mmmm6_add(int * alo, double * mmmm, double * rij, basis * bo, mol * m, qmda
   return;
 }
 
-double * mmmm0_fill(int * alo, double * rij, euler * z, basis * bo, mol * m, qmdata * qmd){
+double * mmmm0_fill(int * alo, double * rij, axis * z, basis * bo, mol * m, qmdata * qmd){
   int mo   = qmd->nLo*qmd->nLo;
   int b4   = mo*mo*mo*mo;
   int nnb4 = m->n*m->n*b4;
@@ -109,7 +109,7 @@ double * mmmm0_fill(int * alo, double * rij, euler * z, basis * bo, mol * m, qmd
     for(int k1=k+1; k1<m->n; k1++){
       int paind0 = (k *m->n+k1)*b4;
       int paind1 = (k1*m->n+k )*b4;
-      euler * zuu1 = z+(k*m->n+k1);
+      axis * zuu1 = z+(k*m->n+k1);
       for(int u=alo[k]; u<alo[k+1]; u++){
         for(int v=u; v<alo[k+1]; v++){
           for(int u1=alo[k1]; u1<alo[k1+1]; u1++){
@@ -144,7 +144,7 @@ double * mmmm0_fill(int * alo, double * rij, euler * z, basis * bo, mol * m, qmd
   return mmmm;
 }
 
-double * pmmm_fill(int * alo, int * alv, euler * z, basis * bo, basis * bv, mol * m, qmdata * qmd){
+double * pmmm_fill(int * alo, int * alv, axis * z, basis * bo, basis * bv, mol * m, qmdata * qmd){
   int mo   = qmd->nLo*qmd->nLo;
   int mv   = qmd->nLv*qmd->nLv;
   int b4   = mv*mo*mo*mo;
@@ -156,7 +156,7 @@ double * pmmm_fill(int * alo, int * alv, euler * z, basis * bo, basis * bv, mol 
         continue;
       }
       int paind = (k*m->n+k1)*b4;
-      euler * zuu1 = z+(k*m->n+k1);
+      axis * zuu1 = z+(k*m->n+k1);
       for(int a=alv[k]; a<alv[k+1]; a++){
         for(int v=alo[k]; v<alo[k+1]; v++){
           for(int u1=alo[k1]; u1<alo[k1+1]; u1++){

@@ -1,4 +1,3 @@
-
 #ifndef QM_T_H
 #define QM_T_H
 
@@ -136,12 +135,10 @@ typedef struct{
 } basis;
 
 typedef struct {
-  double cos_b ;
-  double sin_b ;
-  double cos_g ;
-  double sin_g ;
   double r     ;
-} euler;
+  double x[3]  ;
+  double y[3]  ;
+  double z[3]  ;
+} axis;
 
 #endif
-

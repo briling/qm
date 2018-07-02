@@ -5,9 +5,9 @@
 double R_old(int u, int v, int u1, int v1, basis * bo, mol * m, qmdata * qmd);
 double R2_old(int a, int v, int u1, int v1, basis * bo, basis * bv, mol * m, qmdata * qmd);
 
-double * mmmm0_fill(int * alo, double * rij, euler * z, basis * bo, mol * m, qmdata * qmd);
+double * mmmm0_fill(int * alo, double * rij, axis * z, basis * bo, mol * m, qmdata * qmd);
 void     mmmm6_add (int * alo, double * mmmm, double * rij, basis * bo, mol * m, qmdata * qmd);
-double * pmmm_fill (int * alo, int * alv, euler * z, basis * bo, basis * bv, mol * m, qmdata * qmd);
+double * pmmm_fill (int * alo, int * alv, axis * z, basis * bo, basis * bv, mol * m, qmdata * qmd);
 
 void mmmm_check(double * mmmm, basis * bo, mol * m, qmdata * qmd);
 void pmmm_check(double * pmmm, basis * bo, basis * bv, mol * m, qmdata * qmd);

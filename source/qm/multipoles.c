@@ -16,17 +16,17 @@ void dip_mm(double d[3], int mu, int mv, int lu, int lv, int qu, qmdata * qmd){
   return;
 }
 
-void dip_pm(double d[3], int ma, int mv, int la, int lv, int qa, qmdata * qmd){
+int dip_pm(double d[3], int ma, int mv, int la, int lv, int qa, qmdata * qmd){
   double q1av;
   if(! qlll_pm(qa, la, lv, 1, &q1av, qmd) ) {
     r3set(d, 0.0);
-    return;
+    return 0;
   }
   d[0] = B(la,lv,1,ma,mv, 1);
   d[1] = B(la,lv,1,ma,mv,-1);
   d[2] = B(la,lv,1,ma,mv, 0);
   r3scal(d, -SQRT3*q1av);
-  return;
+  return 1;
 }
 
 int qlll_mm(int qu, int lu, int lv, int l, double * q, qmdata * qmd){
