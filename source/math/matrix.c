@@ -1,4 +1,3 @@
-
 #include "matrix.h"
 
 void mx_id(unsigned int n, double * a){
@@ -8,6 +7,7 @@ void mx_id(unsigned int n, double * a){
       a[i*n+j] = (i==j ? 1.0 : 0.0);
     }
   }
+  return;
 }
 
 void mx_print(unsigned int n, double * a, FILE   * f){
@@ -20,6 +20,7 @@ void mx_print(unsigned int n, double * a, FILE   * f){
   }
   fprintf(f, "\n");
   fflush(f);
+  return;
 }
 
 void mx_rect_print(unsigned int n, unsigned int m, double * a, FILE   * f){
@@ -32,6 +33,7 @@ void mx_rect_print(unsigned int n, unsigned int m, double * a, FILE   * f){
   }
   fprintf(f, "\n");
   fflush(f);
+  return;
 }
 
 void mx_sym_print(unsigned int n, double * a, FILE   * f){
@@ -45,6 +47,7 @@ void mx_sym_print(unsigned int n, double * a, FILE   * f){
   }
   fprintf(f,"\n\n");
   fflush(f);
+  return;
 }
 
 void mx_nosym_print(unsigned int n, double * a, FILE   * f){
@@ -60,12 +63,12 @@ void mx_nosym_print(unsigned int n, double * a, FILE   * f){
   }
   fprintf(f, "\n");
   fflush(f);
+  return;
 }
 
 double * mx_read(unsigned int n, FILE * f){
   unsigned int i,j;
-  double * a;
-  a = (double *)malloc(n*n*sizeof(double));
+  double * a = malloc(n*n*sizeof(double));
   for(i=0; i<n; i++){
     for(j=0; j<n; j++){
       fscanf(f, "%lf", a+(i*n+j));
@@ -75,10 +78,8 @@ double * mx_read(unsigned int n, FILE * f){
 }
 
 double * mx_sym_read(unsigned int n, FILE * f){
-  unsigned int i,N;
-  double * b;
-  N = (n*n-n)/2 + n;
-  b = (double *)malloc(N*sizeof(double));
+  unsigned int i,N = symsize(n);
+  double * b = malloc(N*sizeof(double));
   for (i=0; i<N; i++){
     fscanf(f, "%lf", b+i);
   }
@@ -86,7 +87,7 @@ double * mx_sym_read(unsigned int n, FILE * f){
 }
 
 void mx_transp(unsigned int n, double * a){
-  unsigned int  i,j;
+  unsigned int i,j;
   double t;
   for(i=0; i<n; i++){
     for(j=i+1; j<n; j++){
@@ -99,10 +100,24 @@ void mx_transp(unsigned int n, double * a){
 }
 
 void mx_transpcp (unsigned int   n, double * p, double * a){
-  unsigned int  i,j;
+  unsigned int i,j;
   for(i=0; i<n; i++){
     for(j=0; j<n; j++){
       p[j*n+i] = a[i*n+j];
+    }
+  }
+  return;
+}
+
+void mx_antisym(unsigned int n, double * a){
+  unsigned int i,j;
+  double t;
+  for(i=0; i<n; i++){
+    a[i*n+i] = 0.0;
+    for(j=i+1; j<n; j++){
+      t = a[i*n+j]-a[j*n+i];
+      a[i*n+j] =  t;
+      a[j*n+i] = -t;
     }
   }
   return;
@@ -117,6 +132,31 @@ void mx_multtrmx(unsigned int n, double * p, double * a, double * b){
       t=0.0;
       for(k=0; k<n; k++){
         t += a[i*n+k] * b[j*n+k];
+      }
+      p[i*n+j] = t;
+    }
+  }
+  return;
+}
+
+double mx_multtrmx_tr(unsigned int n, double * a, double * b){
+  /* trace(AB+) */
+  unsigned int i,k;
+  double t = 0.0;
+  for(i=0; i<n; i++){
+    for(k=0; k<n; k++){
+      t += a[n*i+k] * b[n*i+k];
+    }
+  }
+  return t;
+}
+void mx_symmultsymmx(unsigned int n, double * p, double * a, double * b){
+  unsigned int i,j,k;
+  for(i=0; i<n; i++){
+    for(j=0; j<n; j++){
+      double t = 0.0;
+      for(k=0; k<n; k++){
+        t += a[MPOSIF(i,k)] * b[MPOSIF(k,j)];
       }
       p[i*n+j] = t;
     }

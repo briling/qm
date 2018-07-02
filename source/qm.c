@@ -5,9 +5,11 @@
 #include "tools.h"
 #include "mytime.h"
 
-#define print_def  1
-#define dDmax_def  1e-13
-#define maxit_def  64
+#define print_def   1
+#define dDmax_def   1e-13
+#define maxit_def  32
+#define memit_def   8
+#define diis_def    1
 
 int main(int argc, char * argv[]){
 
@@ -19,17 +21,20 @@ int main(int argc, char * argv[]){
   double dDmax = dDmax_def;
   int    maxit = maxit_def;
   int    print = print_def;
+  int    memit = memit_def;
+  int    diis  = diis_def;
   char   vi[256]  = {0};
   char   vo[256]  = {0};
   int    ffield   =  0;
   double field[3] = {0};
   FILE * fo = stdout;
   for(int i=3; i<argc; i++){
-    if( sscanf (argv[i], "conv:%lf", &dDmax ) ) { continue; }
-    if( sscanf (argv[i], "it:%d",    &maxit ) ) { continue; }
-    if( sscanf (argv[i], "print:%d", &print ) ) { continue; }
-    if( sscanf (argv[i], "read:%s",  &vi    ) ) { continue; }
-    if( sscanf (argv[i], "write:%s", &vo    ) ) { continue; }
+    if( sscanf (argv[i], "conv:%lf",   &dDmax         ) ) { continue; }
+    if( sscanf (argv[i], "it:%d,%d",   &maxit, &memit ) ) { continue; }
+    if( sscanf (argv[i], "print:%d",   &print         ) ) { continue; }
+    if( sscanf (argv[i], "read:%s",    &vi            ) ) { continue; }
+    if( sscanf (argv[i], "write:%s",   &vo            ) ) { continue; }
+    if( sscanf (argv[i], "diis:%d",    &diis          ) ) { continue; }
     if( (ffield = sscanf (argv[i], "field: %lf,%lf,%lf", field, field+1, field+2))) { continue; }
     if(! (fo = fopen(argv[i], "w"))){
       fo = stdout;
@@ -40,7 +45,11 @@ int main(int argc, char * argv[]){
   }
   fprintf(fo, "\n"VERSION"\n");
   fprintf(fo, "conv:%e\n", dDmax);
-  fprintf(fo, "it:%d\n",   maxit);
+  fprintf(fo, "it:%d",     maxit);
+  if(diis){
+    fprintf(fo, ",%d",     memit);
+  }
+  fprintf(fo,"\n");
   if(ffield){
     fprintf(fo, "field:%e,%e,%e\n", field[0], field[1], field[2]);
   }
@@ -141,7 +150,12 @@ int main(int argc, char * argv[]){
     E0 += E0_ext(field, m, qmd);
   }
 
-  scf(Na, Nb, E0, Ca, Cb, Va, Vb, Da, Db, Dmp, maxit, dDmax, alo, alv, H, Hmp, mmmm, pmmm, bo, bv, m, qmd, fo);
+  if(diis){
+    scf_diis(Na, Nb, E0, Ca, Cb, Va, Vb, Da, Db, Dmp, maxit, memit, dDmax, alo, alv, H, Hmp, mmmm, pmmm, bo, bv, m, qmd, fo);
+  }
+  else{
+    scf     (Na, Nb, E0, Ca, Cb, Va, Vb, Da, Db, Dmp, maxit, dDmax, alo, alv, H, Hmp, mmmm, pmmm, bo, bv, m, qmd, fo);
+  }
 
   double dip[3] = {0.0};
   dipole(Da, Db, Dmp, dip, alo, alv, bo, bv, m, qmd);

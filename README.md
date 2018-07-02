@@ -22,10 +22,11 @@ make test
 ```
 #### command line options:
 * `conv:%lf`  – scf convergence criterion
-* `it:%d`     – number of iterations
+* `it:%d,%d`  – number of iterations / size of diis subspace
 * `print:%d`  – printing options (1 – default, 2 – print scf vectors, 3 – print atomic charges and bond orders)
 * `read:%s`   – file name for reading scf vectors
 * `write:%s`  – file name for saving scf vectors
+* `diis:%d`   – scf algorithm (0 – straightforward procedure, 1 – diis (default))
 * `field:%lf,%lf,%lf` – applied electric field (with the opposite sign), i.e. <img src="http://latex.codecogs.com/png.latex?\inline&space;\dpi{300}&space;\nabla\phi\equiv-\vec&space;E" title="\nabla\phi\equiv-\vec E" height="22" />
 
 ---

@@ -17,10 +17,16 @@ double * Sab_fill(int M, double * Ca, double * Cb);
 
 void s2uhf(int M, int Na, int Nb, double * Sab, FILE * fo);
 
-void scf(int Na, int Nb, double E0, double * Ca, double * Cb,
-    double * Va, double * Vb,
+void scf(int Na, int Nb, double E0,
+    double * Ca, double * Cb, double * Va, double * Vb,
     double * Da, double * Db, double * Dmp,
     int maxit, double dDmax, int * alo, int * alv,
+    double * H, double * Hmp, double * mmmm, double * pmmm,
+    basis * bo, basis * bv, mol * m, qmdata * qmd, FILE * fo);
+void scf_diis(int Na, int Nb, double E0,
+    double * Ca, double * Cb, double * Va, double * Vb,
+    double * Da, double * Db, double * Dmp,
+    int maxit, int memit, double dDmax, int * alo, int * alv,
     double * H, double * Hmp, double * mmmm, double * pmmm,
     basis * bo, basis * bv, mol * m, qmdata * qmd, FILE * fo);
 
