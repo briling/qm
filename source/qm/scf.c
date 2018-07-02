@@ -13,6 +13,21 @@ static double Ddiff(int M, double * Da, double * Db, double * oldD){
   return dD;
 }
 
+static void diagF(int M, double * F, double * C, double * V){
+#if 1
+  /* F'   := C1^T * F * C1
+     F'B   = V*B
+     C2^T := B^T C1^T
+   */
+  mx_BHBt_sym(M, F, C);
+#else
+  mx_id(M, C);
+#endif
+  jacobi(F, C, V, M, 1e-15, 20, NULL);
+  eigensort(M, V, C);
+  return;
+}
+
 void scf(int Na, int Nb, double E0,
     double * Ca, double * Cb, double * Va, double * Vb,
     double * Da, double * Db, double * Dmp,
@@ -74,14 +89,11 @@ void scf(int Na, int Nb, double E0,
       break;
     }
 
-    mx_id(Mo, Ca);
     veccp(symsize(Mo), Fw, FA);
-    jacobi(Fw, Ca, Va, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Va, Ca);
-    mx_id(Mo, Cb);
+    diagF(Mo, Fw, Ca, Va);
     veccp(symsize(Mo), Fw, FB);
-    jacobi(Fw, Cb, Vb, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Vb, Cb);
+    diagF(Mo, Fw, Cb, Vb);
+
     k++;
   }
 
@@ -267,12 +279,9 @@ void scf_diis(int Na, int Nb, double E0,
       break;
     }
 
-    mx_id(Mo, Ca);
-    jacobi(FA, Ca, Va, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Va, Ca);
-    mx_id(Mo, Cb);
-    jacobi(FB, Cb, Vb, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Vb, Cb);
+    diagF(Mo, FA, Ca, Va);
+    diagF(Mo, FB, Cb, Vb);
+
     k++;
   }
 
