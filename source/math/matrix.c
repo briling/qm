@@ -140,7 +140,7 @@ void mx_multtrmx(unsigned int n, double * p, double * a, double * b){
 }
 
 double mx_multtrmx_tr(unsigned int n, double * a, double * b){
-  /* trace(AB+) */
+  /* trace(AB^T) */
   unsigned int i,k;
   double t = 0.0;
   for(i=0; i<n; i++){
@@ -150,6 +150,7 @@ double mx_multtrmx_tr(unsigned int n, double * a, double * b){
   }
   return t;
 }
+
 void mx_symmultsymmx(unsigned int n, double * p, double * a, double * b){
   unsigned int i,j,k;
   for(i=0; i<n; i++){
@@ -161,6 +162,39 @@ void mx_symmultsymmx(unsigned int n, double * p, double * a, double * b){
       p[i*n+j] = t;
     }
   }
+  return;
+}
+
+void mx_BHBt_sym(unsigned int n, double * h, double * b){
+  /* H := BHB^T */
+  unsigned int i,j,k;
+  double   s;
+  double * t = malloc(n*n*sizeof(double));
+  if(!t){
+    abort();
+  }
+  for(i=0; i<n; i++){
+    for(j=0; j<n; j++){
+      s = 0.0;
+      for(k=0; k<=j; k++){
+        s += b[i*n+k] * h[mpos(k,j)];
+      }
+      for(k=j+1; k<n; k++){
+        s += b[i*n+k] * h[mpos(j,k)];
+      }
+      t[i*n+j] = s;
+    }
+  }
+  for(i=0; i<n; i++){
+    for(j=i; j<n; j++){
+      s = 0.0;
+      for(k=0; k<n; k++){
+        s += b[i*n+k] * t[j*n+k];
+      }
+      h[mpos(i,j)] = s;
+    }
+  }
+  free(t);
   return;
 }
 

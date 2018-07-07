@@ -13,6 +13,23 @@ static double Ddiff(int M, double * Da, double * Db, double * oldD){
   return dD;
 }
 
+static void diagF(int M, int use_old_c, double * F, double * C, double * V){
+  if(use_old_c){
+    /* C1 -- coefficients from the previous step
+       transform       F' = C1^T * F * C1
+       solve           F'B  = BV
+       transform back  C^T = B^T C1^T (simultaneously with solving)
+     */
+    mx_BHBt_sym(M, F, C);
+  }
+  else{
+    mx_id(M, C);
+  }
+  jacobi(F, C, V, M, 1e-15, 20, NULL);
+  eigensort(M, V, C);
+  return;
+}
+
 void scf(int Na, int Nb, double E0,
     double * Ca, double * Cb, double * Va, double * Vb,
     double * Da, double * Db, double * Dmp,
@@ -74,14 +91,11 @@ void scf(int Na, int Nb, double E0,
       break;
     }
 
-    mx_id(Mo, Ca);
     veccp(symsize(Mo), Fw, FA);
-    jacobi(Fw, Ca, Va, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Va, Ca);
-    mx_id(Mo, Cb);
+    diagF(Mo, 1, Fw, Ca, Va);
     veccp(symsize(Mo), Fw, FB);
-    jacobi(Fw, Cb, Vb, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Vb, Cb);
+    diagF(Mo, 1, Fw, Cb, Vb);
+
     k++;
   }
 
@@ -267,12 +281,9 @@ void scf_diis(int Na, int Nb, double E0,
       break;
     }
 
-    mx_id(Mo, Ca);
-    jacobi(FA, Ca, Va, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Va, Ca);
-    mx_id(Mo, Cb);
-    jacobi(FB, Cb, Vb, Mo, 1e-15, 20, NULL);
-    eigensort(Mo, Vb, Cb);
+    diagF(Mo, 1, FA, Ca, Va);
+    diagF(Mo, 1, FB, Cb, Vb);
+
     k++;
   }
 
