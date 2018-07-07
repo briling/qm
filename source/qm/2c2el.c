@@ -10,22 +10,22 @@ double R0_eq39_mmmm_old(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu
   r3cpsc(z, ruu1, 1.0/r);              //eq29
   double ret = 0.0;
   for(int m_=-lu;m_<=lu;m_++){
-    double A1 = A(lu,m_,mu,z);
+    double A1 = A_full(lu,m_,mu,z);
     if(fabs(A1)<EPS){
       continue;
     }
     for(int m__=-lv;m__<=lv;m__++){
-      double AA = A1 * A(lv,m__,mv,z);
+      double AA = A1 * A_full(lv,m__,mv,z);
       if(fabs(AA)<EPS){
         continue;
       }
       for(int m1_=-lu1;m1_<=lu1;m1_++){
-        double AAA = AA * A(lu1,m1_,mu1,z);
+        double AAA = AA * A_full(lu1,m1_,mu1,z);
         if(fabs(AAA)<EPS){
           continue;
         }
         for(int m1__=-lv1;m1__<=lv1;m1__++){
-          double AAAA = AAA * A(lv1,m1__,mv1,z);
+          double AAAA = AAA * A_full(lv1,m1__,mv1,z);
           if(fabs(AAAA)<EPS){
             continue;
           }
@@ -61,22 +61,22 @@ double R0_eq39_mmmp_old(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu
   r3cpsc(z, ruu1, 1.0/r);              //eq29
   double ret = 0.0;
   for(int m_=-lu;m_<=lu;m_++){
-    double A1 = A(lu,m_,mu,z);
+    double A1 = A_full(lu,m_,mu,z);
     if(fabs(A1)<EPS){
       continue;
     }
     for(int m__=-lv;m__<=lv;m__++){
-      double AA = A1 * A(lv,m__,mv,z);
+      double AA = A1 * A_full(lv,m__,mv,z);
       if(fabs(AA)<EPS){
         continue;
       }
       for(int m1_=-lu1;m1_<=lu1;m1_++){
-        double AAA = AA * A(lu1,m1_,mu1,z);
+        double AAA = AA * A_full(lu1,m1_,mu1,z);
         if(fabs(AAA)<EPS){
           continue;
         }
         for(int m1__=-lv1;m1__<=lv1;m1__++){
-          double AAAA = AAA * A(lv1,m1__,mv1,z);
+          double AAAA = AAA * A_full(lv1,m1__,mv1,z);
           if(fabs(AAAA)<EPS){
             continue;
           }
@@ -114,7 +114,7 @@ double R0_eq39_mmmp_old(int mu, int mv, int mu1, int mv1, int lu, int lv, int lu
   return ret;
 }
 
-double R0_eq39_mmmm(int u, int v, int u1, int v1, euler * z, basis * bo, qmdata * qmd){
+double R0_eq39_mmmm(int u, int v, int u1, int v1, axis * z, basis * bo, qmdata * qmd){
   int qu  = bo->Q[u ];
   int qu1 = bo->Q[u1];
   int mu  = bo->m[u ];
@@ -129,22 +129,22 @@ double R0_eq39_mmmm(int u, int v, int u1, int v1, euler * z, basis * bo, qmdata 
 
   double ret = 0.0;
   for(int m_=-lu;m_<=lu;m_++){
-    double A1 = A_new(lu,m_,mu,z);
+    double A1 = A(lu,m_,mu,z);
     if(fabs(A1)<EPS){
       continue;
     }
     for(int m__=-lv;m__<=lv;m__++){
-      double AA = A1 * A_new(lv,m__,mv,z);
+      double AA = A1 * A(lv,m__,mv,z);
       if(fabs(AA)<EPS){
         continue;
       }
       for(int m1_=-lu1;m1_<=lu1;m1_++){
-        double AAA = AA * A_new(lu1,m1_,mu1,z);
+        double AAA = AA * A(lu1,m1_,mu1,z);
         if(fabs(AAA)<EPS){
           continue;
         }
         for(int m1__=-lv1;m1__<=lv1;m1__++){
-          double AAAA = AAA * A_new(lv1,m1__,mv1,z);
+          double AAAA = AAA * A(lv1,m1__,mv1,z);
           if(fabs(AAAA)<EPS){
             continue;
           }
@@ -174,7 +174,7 @@ double R0_eq39_mmmm(int u, int v, int u1, int v1, euler * z, basis * bo, qmdata 
   return ret;
 }
 
-double R0_eq39_mmmp(int a, int v, int u1, int v1, euler * z, basis * bo, basis * bv, qmdata * qmd){
+double R0_eq39_mmmp(int a, int v, int u1, int v1, axis * z, basis * bo, basis * bv, qmdata * qmd){
 
   int qa  = bv->Q[a ];
   int qu1 = bo->Q[u1];
@@ -190,22 +190,22 @@ double R0_eq39_mmmp(int a, int v, int u1, int v1, euler * z, basis * bo, basis *
 
   double ret = 0.0;
   for(int m_=-la;m_<=la;m_++){
-    double A1 = A_new(la,m_,ma,z);
+    double A1 = A(la,m_,ma,z);
     if(fabs(A1)<EPS){
       continue;
     }
     for(int m__=-lv;m__<=lv;m__++){
-      double AA = A1 * A_new(lv,m__,mv,z);
+      double AA = A1 * A(lv,m__,mv,z);
       if(fabs(AA)<EPS){
         continue;
       }
       for(int m1_=-lu1;m1_<=lu1;m1_++){
-        double AAA = AA * A_new(lu1,m1_,mu1,z);
+        double AAA = AA * A(lu1,m1_,mu1,z);
         if(fabs(AAA)<EPS){
           continue;
         }
         for(int m1__=-lv1;m1__<=lv1;m1__++){
-          double AAAA = AAA * A_new(lv1,m1__,mv1,z);
+          double AAAA = AAA * A(lv1,m1__,mv1,z);
           if(fabs(AAAA)<EPS){
             continue;
           }

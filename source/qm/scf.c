@@ -30,7 +30,7 @@ static void diagF(int M, int use_old_c, double * F, double * C, double * V){
   return;
 }
 
-void scf(int Na, int Nb, double E0,
+double scf(int Na, int Nb, double E0,
     double * Ca, double * Cb, double * Va, double * Vb,
     double * Da, double * Db, double * Dmp,
     int maxit, double dDmax, int * alo, int * alv,
@@ -80,14 +80,16 @@ void scf(int Na, int Nb, double E0,
 
     double dD = Ddiff(Mo, Da, Db, oldD);
     double dE = E-oldE;
-    if(!k){
-      fprintf(fo, " it %3d     E = % 17.10lf\n", k+1, E);
-    }
-    else{
-      fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k+1, E, dE, dD);
+    if(fo){
+      if(!k){
+        fprintf(fo, " it %3d     E = % 17.10lf\n", k+1, E);
+      }
+      else{
+        fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k+1, E, dE, dD);
+      }
     }
     if(dD < dDmax){
-      fprintf(fo, "converged\n");
+      if(fo) fprintf(fo, "converged\n");
       break;
     }
 
@@ -99,11 +101,13 @@ void scf(int Na, int Nb, double E0,
     k++;
   }
 
-  fprintf(fo, "\n");
-  fprintf(fo, " (E0   = %20.10lf)\n", E0);
-  fprintf(fo, " (E0+1 = %20.10lf)\n", E0+E1);
-  fprintf(fo, " (E2   = %20.10lf)\n", E2);
-  fprintf(fo, "  E    = %20.10lf\n",  E);
+  if(fo){
+    fprintf(fo, "\n");
+    fprintf(fo, " (E0   = %20.10lf)\n", E0);
+    fprintf(fo, " (E0+1 = %20.10lf)\n", E0+E1);
+    fprintf(fo, " (E2   = %20.10lf)\n", E2);
+    fprintf(fo, "  E    = %20.10lf\n",  E);
+  }
 
   vecsum(Mo*Mv, Dmp, dEdFa, dEdFb);
 
@@ -126,7 +130,7 @@ void scf(int Na, int Nb, double E0,
   free(dEdFa);
   free(dEdFb);
 
-  return;
+  return E;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -185,7 +189,7 @@ static inline void lincomb(int n, int m, double * p, double ** v, double * c){
   return;
 }
 
-void scf_diis(int Na, int Nb, double E0,
+double scf_diis(int Na, int Nb, double E0,
     double * Ca, double * Cb, double * Va, double * Vb,
     double * Da, double * Db, double * Dmp,
     int maxit, int memit, double dDmax, int * alo, int * alv,
@@ -270,14 +274,16 @@ void scf_diis(int Na, int Nb, double E0,
 
     double dD = Ddiff(Mo, Da, Db, oldD);
     double dE = E-oldE;
-    if(!k){
-      fprintf(fo, " it %3d     E = % 17.10lf\n", k+1, E);
-    }
-    else{
-      fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k+1, E, dE, dD);
+    if(fo){
+      if(!k){
+        fprintf(fo, " it %3d     E = % 17.10lf\n", k+1, E);
+      }
+      else{
+        fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k+1, E, dE, dD);
+      }
     }
     if(dD < dDmax){
-      fprintf(fo, "converged\n");
+      if(fo) fprintf(fo, "converged\n");
       break;
     }
 
@@ -287,11 +293,13 @@ void scf_diis(int Na, int Nb, double E0,
     k++;
   }
 
-  fprintf(fo, "\n");
-  fprintf(fo, " (E0   = %20.10lf)\n", E0);
-  fprintf(fo, " (E0+1 = %20.10lf)\n", E0+E1);
-  fprintf(fo, " (E2   = %20.10lf)\n", E2);
-  fprintf(fo, "  E    = %20.10lf\n",  E);
+  if(fo){
+    fprintf(fo, "\n");
+    fprintf(fo, " (E0   = %20.10lf)\n", E0);
+    fprintf(fo, " (E0+1 = %20.10lf)\n", E0+E1);
+    fprintf(fo, " (E2   = %20.10lf)\n", E2);
+    fprintf(fo, "  E    = %20.10lf\n",  E);
+  }
 
   vecsum(Mo*Mv, Dmp, dEdFa, dEdFb);
 
@@ -317,6 +325,6 @@ void scf_diis(int Na, int Nb, double E0,
   free(FB);
   free(dEdFa);
   free(dEdFb);
-  return;
+  return E;
 }
 

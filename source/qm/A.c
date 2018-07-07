@@ -2,206 +2,128 @@
 #include "vec3.h"
 #include "matrix.h"
 
-#define EPS 1e-15
+static int find_min_proj(double z[3]){
+  int i_min = 0;
+  for(int i=1; i<3; i++){
+    if( fabs(z[i]) < fabs(z[i_min]) ){
+      i_min = i;
+    }
+  }
+  return i_min;
+}
 
-double A(int l, int m1, int m2, double z[3]){
+static void new_xy_axis(int i, double * xx1, double * xx2, double x[3], double y[3], double z[3]){
+  r3cpsc( x, z, -z[i] );
+  x[i] += 1.0;
+  double s2 = 1.0 / (1.0-z[i]*z[i]);
+  double s1 = sqrt(s2);
+  r3scal(x, s1);
+  r3x(y, z, x);
+  *xx1 = s1;
+  *xx2 = s2;
+  return;
+}
+
+double A_full(int l, int m1, int m2, double z[3]){
+  if(l == 0){
+    return 1.0;
+  }
+  int i_min = find_min_proj(z);
+  double xx1, xx2;
+  axis xyz;
+  r3cp(xyz.z, z);
+  new_xy_axis(i_min, &xx1, &xx2, xyz.x, xyz.y, z);
+  return A(l, m1, m2, &xyz);
+}
+
+double A(int l, int m1, int m2, axis * xyz){
+
+  double * z = xyz->z;
+  double * y = xyz->y;
+  double * x = xyz->x;
 
   if(l == 0){
     return 1.0;
   }
 
-  double cb,sb,cg,sg; // ca = 1.0; sa = 0.0
-
-  cb = z[2];
-  double acb = fabs(cb);
-  if(acb < EPS){
-    sb =  1.0;
-    cg = -z[0];
-    sg =  z[1];
-  }
-  else if(fabs(acb-1.0)>EPS){
-    sb = sqrt(1.0 - cb*cb);
-    double sb1 = 1.0/sb;
-    cg = -z[0]*sb1;
-    sg =  z[1]*sb1;
-#if 1
-    if(sg > 1.0){
-      sg = 1.0;
-      cg = 0.0;
-    }
-    else if(sg < -1.0){
-      sg = -1.0;
-      cg = 0.0;
-    }
-#endif
-  }
-  else{
-    sb = 0.0;
-    cg = 1.0;
-    sg = 0.0;
-  }
-
   if(l == 1){
-    if((m2==-1)&&(m1==-1)) return    cg    ;
-    if((m2== 0)&&(m1==-1)) return    0.0   ;
-    if((m2== 1)&&(m1==-1)) return    sg    ;
-    if((m2==-1)&&(m1== 0)) return    sg*sb ;
-    if((m2== 0)&&(m1== 0)) return    cb    ;
-    if((m2== 1)&&(m1== 0)) return   -sb*cg ;
-    if((m2==-1)&&(m1== 1)) return   -sg*cb ;
-    if((m2== 0)&&(m1== 1)) return    sb    ;
-    if((m2== 1)&&(m1== 1)) return    cg*cb ;
+    if((m2==-1)&&(m1==-1)) return  y[1]  ;
+    if((m2== 0)&&(m1==-1)) return  y[2]  ;
+    if((m2== 1)&&(m1==-1)) return  y[0]  ;
+    if((m2==-1)&&(m1== 0)) return  z[1]  ;
+    if((m2== 0)&&(m1== 0)) return  z[2]  ;
+    if((m2== 1)&&(m1== 0)) return  z[0]  ;
+    if((m2==-1)&&(m1== 1)) return  x[1]  ;
+    if((m2== 0)&&(m1== 1)) return  x[2]  ;
+    if((m2== 1)&&(m1== 1)) return  x[0]  ;
   }
 
   if(l == 2){
+    if(m1 == -2){
+      if( m2==-2) return  x[0]*y[1]+x[1]*y[0]  ;
+      if( m2==-1) return  x[1]*y[2]+x[2]*y[1]  ;
+      if( m2== 0) return  x[2]*y[2] * SQRT3    ;
+      if( m2== 1) return  x[0]*y[2]+x[2]*y[0]  ;
+      if( m2== 2) return  x[0]*y[0]-x[1]*y[1]  ;
+    }
 
-    if((m2==-2)&&(m1==-2)) return    (1.0-2.0*sg*sg)*cb;
-    if((m2==-1)&&(m1==-2)) return    cg*sb;
-    if((m2== 0)&&(m1==-2)) return    0.0;
-    if((m2== 1)&&(m1==-2)) return    sg*sb;
-    if((m2== 2)&&(m1==-2)) return    2.0*sg*cg*cb;
+    else if(m1 == -1){
+      if( m2==-2) return  y[0]*z[1]+y[1]*z[0]  ;
+      if( m2==-1) return  y[1]*z[2]+y[2]*z[1]  ;
+      if( m2== 0) return  y[2]*z[2] * SQRT3    ;
+      if( m2== 1) return  y[0]*z[2]+y[2]*z[0]  ;
+      if( m2== 2) return  y[0]*z[0]-y[1]*z[1]  ;
+    }
 
-    if((m2==-2)&&(m1==-1)) return    sb*(2.0*sg*sg-1.0);
-    if((m2==-1)&&(m1==-1)) return    cg*cb;
-    if((m2== 0)&&(m1==-1)) return    0.0;
-    if((m2== 1)&&(m1==-1)) return    sg*cb;
-    if((m2== 2)&&(m1==-1)) return   -2.0*sb*sg*cg;
+    else if(m1 == 0){
+      if( m2==-2) return  z[0]*z[1] * SQRT3                    ;
+      if( m2==-1) return  z[1]*z[2] * SQRT3                    ;
+      if( m2== 0) return  1.5*z[2]*z[2] - 0.5                  ;
+      if( m2== 1) return  z[0]*z[2] * SQRT3                    ;
+      if( m2== 2) return  (z[0]*z[0]-z[1]*z[1]) * 0.5 * SQRT3  ;
+    }
 
-    if((m2==-2)&&(m1== 0)) return   -SQRT3 * sg*cg*sb*sb;
-    if((m2==-1)&&(m1== 0)) return    SQRT3 * sg*sb*cb;
-    if((m2== 0)&&(m1== 0)) return    1.5*cb*cb-0.5;
-    if((m2== 1)&&(m1== 0)) return   -SQRT3 * cg*sb*cb;
-    if((m2== 2)&&(m1== 0)) return    SQRT3 * sb*sb*(0.5-sg*sg);
+    else if(m1 == 1){
+      if( m2==-2) return  x[0]*z[1]+x[1]*z[0]  ;
+      if( m2==-1) return  x[1]*z[2]+x[2]*z[1]  ;
+      if( m2== 0) return  x[2]*z[2] * SQRT3    ;
+      if( m2== 1) return  x[0]*z[2]+x[2]*z[0]  ;
+      if( m2== 2) return  x[0]*z[0]-x[1]*z[1]  ;
+    }
 
-    if((m2==-2)&&(m1== 1)) return    2.0*sb*sg*cg*cb;
-    if((m2==-1)&&(m1== 1)) return    sg*(1.0-2.0*cb*cb);
-    if((m2== 0)&&(m1== 1)) return    SQRT3 * sb*cb;
-    if((m2== 1)&&(m1== 1)) return    cg*(2.0*cb*cb-1.0);
-    if((m2== 2)&&(m1== 1)) return    sb*cb*(2.0*sg*sg-1.0);
-
-    if((m2==-2)&&(m1== 2)) return -sg*cg*(1.0+cb*cb);
-    if((m2==-1)&&(m1== 2)) return -cb*sb*sg;
-    if((m2== 0)&&(m1== 2)) return SQRT3*0.5*sb*sb;
-    if((m2== 1)&&(m1== 2)) return sb*cg*cb;
-    if((m2== 2)&&(m1== 2)) return (0.5-sg*sg)*(1.0+cb*cb);
+    else if(m1 == 2){
+      if( m2==-2) return  x[0]*x[1]-y[0]*y[1]                              ;
+      if( m2==-1) return  x[1]*x[2]-y[1]*y[2]                              ;
+      if( m2== 0) return  (x[2]*x[2]-y[2]*y[2]) * 0.5 * SQRT3              ;
+      if( m2== 1) return  x[0]*x[2]-y[0]*y[2]                              ;
+      if( m2== 2) return  (x[0]*x[0]-x[1]*x[1]+y[1]*y[1]-y[0]*y[0]) * 0.5  ;
+    }
   }
-  abort();
+  GOTOHELL;
 }
 
-static euler z2eu(double z[3]){
-  double cb,sb,cg,sg; // ca = 1.0; sa = 0.0
-  cb = z[2];
-  double acb = fabs(cb);
-  if(acb < EPS){
-    sb =  1.0;
-    cg = -z[0];
-    sg =  z[1];
-  }
-  else if(fabs(acb-1.0)>EPS){
-    sb = sqrt(1.0 - cb*cb);
-    double sb1 = 1.0/sb;
-    cg = -z[0]*sb1;
-    sg =  z[1]*sb1;
-#if 1
-    if(sg > 1.0){
-      sg = 1.0;
-      cg = 0.0;
-    }
-    else if(sg < -1.0){
-      sg = -1.0;
-      cg = 0.0;
-    }
-#endif
-  }
-  else{
-    sb = 0.0;
-    cg = 1.0;
-    sg = 0.0;
-  }
-  euler eu;
-  eu.cos_b = cb;
-  eu.sin_b = sb;
-  eu.cos_g = cg;
-  eu.sin_g = sg;
-  return eu;
-}
-
-void distang(double * rij, euler * eu, mol * m) {
+void distang(double * rij, axis * xyz, mol * m) {
   for(int i=0; i<m->n; i++){
     for(int j=i+1; j<m->n; j++){
-      double dij[3];
-      double dji[3];
-      r3diff(dij, m->r+i*3, m->r+j*3);
-      double r = sqrt(r3dot(dij,dij));
-      r3scal(dij, 1.0/r);
-      r3cpsc(dji, dij, -1);
-      int ij = (i*m->n+j);
-      int ji = (j*m->n+i);
-      eu[ij] = z2eu(dij);
-      eu[ji] = z2eu(dji);
-      eu[ij].r = r;
-      eu[ji].r = r;
+      double z[3];
+      r3diff(z, m->r+i*3, m->r+j*3);
+      double r = sqrt(r3dot(z,z));
+      r3scal(z, 1.0/r);
+      int ij = i*m->n+j;
+      int ji = j*m->n+i;
+      xyz[ij].r = r;
+      xyz[ji].r = r;
+      r3cp  (xyz[ij].z, z);
+      r3cpsc(xyz[ji].z, z, -1);
+
+      int i_min = find_min_proj(z);
+      double xx1,xx2;
+      new_xy_axis(i_min, &xx1, &xx2, xyz[ij].x, xyz[ij].y, xyz[ij].z);
+      new_xy_axis(i_min, &xx1, &xx2, xyz[ji].x, xyz[ji].y, xyz[ji].z);
+
       rij[mpos(i,j)] = r;
     }
   }
   return;
-}
-
-double A_new(int l, int m1, int m2, euler * eu){
-
-  if(l == 0){
-    return 1.0;
-  }
-
-  double cb = eu->cos_b;
-  double sb = eu->sin_b;
-  double cg = eu->cos_g;
-  double sg = eu->sin_g;
-
-  if(l == 1){
-    if((m2==-1)&&(m1==-1)) return    cg    ;
-    if((m2== 0)&&(m1==-1)) return    0.0   ;
-    if((m2== 1)&&(m1==-1)) return    sg    ;
-    if((m2==-1)&&(m1== 0)) return    sg*sb ;
-    if((m2== 0)&&(m1== 0)) return    cb    ;
-    if((m2== 1)&&(m1== 0)) return   -sb*cg ;
-    if((m2==-1)&&(m1== 1)) return   -sg*cb ;
-    if((m2== 0)&&(m1== 1)) return    sb    ;
-    if((m2== 1)&&(m1== 1)) return    cg*cb ;
-  }
-
-  if(l == 2){
-
-    if((m2==-2)&&(m1==-2)) return    (1.0-2.0*sg*sg)*cb;
-    if((m2==-1)&&(m1==-2)) return    cg*sb;
-    if((m2== 0)&&(m1==-2)) return    0.0;
-    if((m2== 1)&&(m1==-2)) return    sg*sb;
-    if((m2== 2)&&(m1==-2)) return    2.0*sg*cg*cb;
-
-    if((m2==-2)&&(m1==-1)) return    sb*(2.0*sg*sg-1.0);
-    if((m2==-1)&&(m1==-1)) return    cg*cb;
-    if((m2== 0)&&(m1==-1)) return    0.0;
-    if((m2== 1)&&(m1==-1)) return    sg*cb;
-    if((m2== 2)&&(m1==-1)) return   -2.0*sb*sg*cg;
-
-    if((m2==-2)&&(m1== 0)) return   -SQRT3 * sg*cg*sb*sb;
-    if((m2==-1)&&(m1== 0)) return    SQRT3 * sg*sb*cb;
-    if((m2== 0)&&(m1== 0)) return    1.5*cb*cb-0.5;
-    if((m2== 1)&&(m1== 0)) return   -SQRT3 * cg*sb*cb;
-    if((m2== 2)&&(m1== 0)) return    SQRT3 * sb*sb*(0.5-sg*sg);
-
-    if((m2==-2)&&(m1== 1)) return    2.0*sb*sg*cg*cb;
-    if((m2==-1)&&(m1== 1)) return    sg*(1.0-2.0*cb*cb);
-    if((m2== 0)&&(m1== 1)) return    SQRT3 * sb*cb;
-    if((m2== 1)&&(m1== 1)) return    cg*(2.0*cb*cb-1.0);
-    if((m2== 2)&&(m1== 1)) return    sb*cb*(2.0*sg*sg-1.0);
-
-    if((m2==-2)&&(m1== 2)) return -sg*cg*(1.0+cb*cb);
-    if((m2==-1)&&(m1== 2)) return -cb*sb*sg;
-    if((m2== 0)&&(m1== 2)) return SQRT3*0.5*sb*sb;
-    if((m2== 1)&&(m1== 2)) return sb*cg*cb;
-    if((m2== 2)&&(m1== 2)) return (0.5-sg*sg)*(1.0+cb*cb);
-  }
-  abort();
 }
 

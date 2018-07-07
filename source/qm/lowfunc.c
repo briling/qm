@@ -50,20 +50,6 @@ double f_eq42_n0(double r, double a, double c0){
   return exp(-a*r)*c0;
 }
 
-static double pow_pos(int n, double x){
-  if(n==0){
-    return 1.0;
-  }
-  else if(n==1){
-    return x;
-  }
-  double s = x;
-  for(int i=1; i<n; i++){
-    s *= x;
-  }
-  return s;
-}
-
 double g_eq43_l0(double r, double q, double a, double c0){
   double ex = exp(-a*r);
   double r1 = 1.0/r;
@@ -101,5 +87,19 @@ double fo_eq46(double r, double a, double b, double c){
   double t1 = exp(-a*r+b);
   double t2 = t1*t1;
   return c*t1/(1.0+t2);
+}
+
+double pow_pos(int n, double x){
+  if(n==0){
+    return 1.0;
+  }
+  else if(n==1){
+    return x;
+  }
+  double s = x;
+  for(int i=1; i<n; i++){
+    s *= x;
+  }
+  return s;
 }
 

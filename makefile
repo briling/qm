@@ -42,7 +42,7 @@ all : qm
 qm : $(qmobj) $(molobj) $(mathobj) $(OBJDIR)/qm.o
 	$(CC) $^ -o $@ $(OFLAGS)
 
-$(OBJDIR)/%.o : $(SRCDIR)/%.c
+$(OBJDIR)/%.o : $(SRCDIR)/%.c version.txt
 	$(CC) $(CFLAGS) $< -o $@ $(INCL)
 
 clean :

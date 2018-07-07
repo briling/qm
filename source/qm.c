@@ -101,12 +101,12 @@ int main(int argc, char * argv[]){
   double * H    = malloc(sizeof(double)*symsize(Mo));
   double * Hmp  = malloc(sizeof(double)*Mo*Mv);
   double * rij  = malloc(sizeof(double)*symsize(m->n));
-  euler  * z    = malloc(sizeof(euler )*(m->n)*(m->n));
-  distang(rij, z, m);
-  double * mmmm = mmmm0_fill(alo, rij, z, bo, m, qmd);
-  double * pmmm = pmmm_fill (alo, alv, z, bo, bv, m, qmd);
-  f_eq25_mm(f,   z, alo,      bo,     m, qmd);
-  f_eq25_mp(fmp, z, alo, alv, bo, bv, m, qmd);
+  axis   * xyz  = malloc(sizeof(axis )*(m->n)*(m->n));
+  distang(rij, xyz, m);
+  double * mmmm = mmmm0_fill(alo, rij, xyz, bo, m, qmd);
+  double * pmmm = pmmm_fill (alo, alv, xyz, bo, bv, m, qmd);
+  f_eq25_mm(f,   xyz, alo,      bo,     m, qmd);
+  f_eq25_mp(fmp, xyz, alo, alv, bo, bv, m, qmd);
   H_eq22_mm(f,   H,   alo,      mmmm, bo,     m, qmd);
   H_eq22_mp(fmp, Hmp, alo, alv, pmmm, bo, bv, m, qmd);
   mmmm6_add(alo, mmmm, rij, bo, m, qmd);
@@ -114,7 +114,7 @@ int main(int argc, char * argv[]){
   mmmm_check(mmmm, bo, m, qmd);
   pmmm_check(pmmm, bo, bv, m, qmd);
 #endif
-  free(z);
+  free(xyz);
   free(rij);
 
   // init ----------------------------------------------------------------------

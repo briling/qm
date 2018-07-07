@@ -6,6 +6,7 @@
 #define SQRTPI   1.77245385090551602729
 
 double B(int l1, int l2, int l3, int m1, int m2, int m3);
+double pow_pos(int n, double x);
 double f_eq42_n0(double r, double a, double c0);
 double g_eq43_l0(double r, double q, double a, double c0);
 double g_eq43_c0(int l, double r, double q, double a);
