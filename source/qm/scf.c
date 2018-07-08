@@ -4,13 +4,16 @@
 
 static double Ddiff(int M, double * Da, double * Db, double * oldD){
   double dD = 0.0;
-  for(int i=0; i<symsize(M); i++){
-    double ab = Da[i]+Db[i];
-    double d  = oldD[i] - ab;
-    dD += d*d;
-    oldD[i] = ab;
+  for(int u=0; u<M; u++){
+    for(int v=u; v<M; v++){
+      int uv = mpos(u,v);
+      double ab = Da[uv]+Db[uv];
+      double d  = oldD[uv] - ab;
+      dD += d*d*(u==v?1:2);
+      oldD[uv] = ab;
+    }
   }
-  return dD;
+  return sqrt(dD)/M;
 }
 
 static void diagF(int M, int use_old_c, double * F, double * C, double * V){
@@ -245,7 +248,7 @@ double scf_diis(int Na, int Nb, double E0,
     D_eq9 (Na, Mo, Ca, Da);
     D_eq9 (Nb, Mo, Cb, Db);
 
-    if(k>=K1){
+    if(k>=K1){ // out of memory
       allFa[k] = allFa[k-K1];
       allFb[k] = allFb[k-K1];
       allRa[k] = allRa[k-K1];
@@ -274,12 +277,13 @@ double scf_diis(int Na, int Nb, double E0,
 
     double dD = Ddiff(Mo, Da, Db, oldD);
     double dE = E-oldE;
+    double Rmax = vecabsmax(2*Mo*Mo, allRa[k]); // Rb[k] is right after Ra[k]
     if(fo){
       if(!k){
-        fprintf(fo, " it %3d     E = % 17.10lf\n", k+1, E);
+        fprintf(fo, " it %3d     E = % 17.10lf                                                Rmax = % 5.2e\n", k+1, E, Rmax);
       }
       else{
-        fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k+1, E, dE, dD);
+        fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e    Rmax = % 5.2e\n", k+1, E, dE, dD, Rmax);
       }
     }
     if(dD < dDmax){

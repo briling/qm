@@ -35,3 +35,14 @@ void vecadds(size_t n, double * u, double * v, double s){
   return;
 }
 
+double vecabsmax(size_t n, double * u){
+  double s = fabs(u[0]);
+  for(size_t i=1; i<n; i++){
+    double t = fabs(u[i]);
+    if(s<t){
+      s = t;
+    }
+  }
+  return s;
+}
+

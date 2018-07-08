@@ -6,7 +6,7 @@
 #include "mytime.h"
 
 #define print_def   1
-#define dDmax_def   1e-13
+#define dDmax_def   1e-8
 #define maxit_def  32
 #define memit_def   8
 #define diis_def    1
