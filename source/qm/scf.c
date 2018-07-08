@@ -33,6 +33,42 @@ static void diagF(int M, int use_old_c, double * F, double * C, double * V){
   return;
 }
 
+static inline void errormx(int M, double * R, double * F, double * D){
+  /* R := FD-DF */
+  mx_symmultsymmx(M, R, F, D);
+  mx_antisym(M, R);
+  return;
+}
+
+static void iter_print(int k, double E, double dE, double dD, FILE * fo){
+  if(!k){
+    fprintf(fo, " it %3d     E = % 17.10lf\n", k+1, E);
+  }
+  else{
+    fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k+1, E, dE, dD);
+  }
+  return;
+}
+
+static void iter_diis_print(int k, double E, double dE, double dD, double Rmax, FILE * fo){
+  if(!k){
+    fprintf(fo, " it %3d     E = % 17.10lf                                                Rmax = % 5.2e\n", k+1, E, Rmax);
+  }
+  else{
+    fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e    Rmax = % 5.2e\n", k+1, E, dE, dD, Rmax);
+  }
+  return;
+}
+
+static void E012_print(double E, double E0, double E1, double E2, FILE * fo){
+  fprintf(fo, "\n");
+  fprintf(fo, " (E0   = %20.10lf)\n", E0);
+  fprintf(fo, " (E0+1 = %20.10lf)\n", E0+E1);
+  fprintf(fo, " (E2   = %20.10lf)\n", E2);
+  fprintf(fo, "  E    = %20.10lf\n",  E);
+  return;
+}
+
 double scf(int Na, int Nb, double E0,
     double * Ca, double * Cb, double * Va, double * Vb,
     double * Da, double * Db, double * Dmp,
@@ -83,14 +119,7 @@ double scf(int Na, int Nb, double E0,
 
     double dD = Ddiff(Mo, Da, Db, oldD);
     double dE = E-oldE;
-    if(fo){
-      if(!k){
-        fprintf(fo, " it %3d     E = % 17.10lf\n", k+1, E);
-      }
-      else{
-        fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e\n", k+1, E, dE, dD);
-      }
-    }
+    if(fo) iter_print(k, E, dE, dD, fo);
     if(dD < dDmax){
       if(fo) fprintf(fo, "converged\n");
       break;
@@ -104,14 +133,7 @@ double scf(int Na, int Nb, double E0,
     k++;
   }
 
-  if(fo){
-    fprintf(fo, "\n");
-    fprintf(fo, " (E0   = %20.10lf)\n", E0);
-    fprintf(fo, " (E0+1 = %20.10lf)\n", E0+E1);
-    fprintf(fo, " (E2   = %20.10lf)\n", E2);
-    fprintf(fo, "  E    = %20.10lf\n",  E);
-  }
-
+  if(fo) E012_print(E, E0, E1, E2, fo);
   vecsum(Mo*Mv, Dmp, dEdFa, dEdFb);
 
   free(Fa);
@@ -136,14 +158,71 @@ double scf(int Na, int Nb, double E0,
   return E;
 }
 
-/*---------------------------------------------------------------------------*/
+double scf_r(int N, double E0,
+    double * C, double * V, double * D, double * Dmp,
+    int maxit, double dDmax, int * alo, int * alv,
+    double * H, double * Hmp, double * mmmm, double * pmmm,
+    basis * bo, basis * bv, mol * m, qmdata * qmd, FILE * fo){
 
-static inline void errormx(int M, double * R, double * F, double * D){
-  /* R := FD-DF */
-  mx_symmultsymmx(M, R, F, D);
-  mx_antisym(M, R);
-  return;
+  int Mo = bo->M;
+  int Mv = bv->M;
+
+  double * F    = malloc(sizeof(double)*symsize(Mo));
+  double * oldD = malloc(sizeof(double)*symsize(Mo));
+  double * Fw   = malloc(sizeof(double)*symsize(Mo));
+  double * Fmp  = malloc(sizeof(double)*Mo*Mv);
+  double * X    = malloc(sizeof(double)*Mo*Mv);
+  double * FX   = malloc(sizeof(double)*Mo*Mo);
+  double * s    = malloc(sizeof(double)*Mo);
+  double * F2   = malloc(sizeof(double)*symsize(Mo));
+  double * Feff = malloc(sizeof(double)*symsize(Mo));
+
+  double E1 = 0.0;
+  double E2 = 0.0;
+  double E  = E0+E1+E2;
+  vecset(symsize(Mo), oldD, 0.0);
+  int k = 0;
+
+  while(k < maxit){
+    double oldE = E;
+    D_eq9(N/2, Mo, C, D);
+    F_eq4_r(D, H, F, alo, mmmm, bo, m, qmd);
+    F2_8_7_14_15_6_r(D, Hmp, Fmp, X, FX, s, F2, alo, alv, pmmm, bo, bv, m, qmd);
+    dEdF_r(D, X, FX, s, Fmp, Dmp, alo, bo, bv, qmd);
+    Heff_r(Dmp, F, F2, Feff, alo, alv, pmmm, bo, bv, m, qmd);
+
+    E1 = E1_eq3_r(Mo, H, D, F);
+    E2 = E2_eq5_r(Mo, D, F2);
+    E  = E0+E1+E2;
+
+    double dD = Ddiff(Mo, D, D, oldD);
+    double dE = E-oldE;
+    if(fo) iter_print(k, E, dE, dD, fo);
+    if(dD < dDmax){
+      if(fo) fprintf(fo, "converged\n");
+      break;
+    }
+
+    veccp(symsize(Mo), Fw, Feff);
+    diagF(Mo, 1, Fw, C, V);
+    k++;
+  }
+
+  if(fo) E012_print(E, E0, E1, E2, fo);
+
+  free(oldD);
+  free(s);
+  free(F);
+  free(Fmp);
+  free(F2);
+  free(Feff);
+  free(Fw);
+  free(FX);
+  free(X);
+  return E;
 }
+
+/*---------------------------------------------------------------------------*/
 
 static inline void addB(int k, double * B, int M, double ** allR){
   for(int i=0; i<=k; i++){
@@ -278,14 +357,7 @@ double scf_diis(int Na, int Nb, double E0,
     double dD = Ddiff(Mo, Da, Db, oldD);
     double dE = E-oldE;
     double Rmax = vecabsmax(2*Mo*Mo, allRa[k]); // Rb[k] is right after Ra[k]
-    if(fo){
-      if(!k){
-        fprintf(fo, " it %3d     E = % 17.10lf                                                Rmax = % 5.2e\n", k+1, E, Rmax);
-      }
-      else{
-        fprintf(fo, " it %3d     E = % 17.10lf    dE = % 17.10lf    dD = % 5.2e    Rmax = % 5.2e\n", k+1, E, dE, dD, Rmax);
-      }
-    }
+    if(fo) iter_diis_print(k, E, dE, dD, Rmax, fo);
     if(dD < dDmax){
       if(fo) fprintf(fo, "converged\n");
       break;
@@ -297,14 +369,7 @@ double scf_diis(int Na, int Nb, double E0,
     k++;
   }
 
-  if(fo){
-    fprintf(fo, "\n");
-    fprintf(fo, " (E0   = %20.10lf)\n", E0);
-    fprintf(fo, " (E0+1 = %20.10lf)\n", E0+E1);
-    fprintf(fo, " (E2   = %20.10lf)\n", E2);
-    fprintf(fo, "  E    = %20.10lf\n",  E);
-  }
-
+  if(fo) E012_print(E, E0, E1, E2, fo);
   vecsum(Mo*Mv, Dmp, dEdFa, dEdFb);
 
   free(Fs);
@@ -329,6 +394,101 @@ double scf_diis(int Na, int Nb, double E0,
   free(FB);
   free(dEdFa);
   free(dEdFb);
+  return E;
+}
+
+double scf_diis_r(int N, double E0,
+    double * C, double * V, double * D, double * Dmp,
+    int maxit, int memit, double dDmax, int * alo, int * alv,
+    double * H, double * Hmp, double * mmmm, double * pmmm,
+    basis * bo, basis * bv, mol * m, qmdata * qmd, FILE * fo){
+
+  int Mo = bo->M;
+  int Mv = bv->M;
+
+  double * F    = malloc(sizeof(double)*symsize(Mo));
+  double * oldD = malloc(sizeof(double)*symsize(Mo));
+  double * Fmp  = malloc(sizeof(double)*Mo*Mv);
+  double * X    = malloc(sizeof(double)*Mo*Mv);
+  double * FX   = malloc(sizeof(double)*Mo*Mo);
+  double * s    = malloc(sizeof(double)*Mo);
+  double * F2   = malloc(sizeof(double)*symsize(Mo));
+  double * Feff = malloc(sizeof(double)*symsize(Mo));
+
+  double * B  = calloc(sizeof(double)*(symsize(maxit+1)+(maxit+1)),1);
+  double * cf = B + symsize(maxit+1);
+  double ** allF = malloc(2*maxit*sizeof(double *));
+  double ** allR = allF + maxit;
+  int K1 = MIN(maxit,memit);
+  double * Fs = malloc(sizeof(double)*K1*symsize(Mo));
+  double * Rs = malloc(sizeof(double)*K1*Mo*Mo);
+  for(int i=0; i<K1; i++){
+    allF[i] = Fs + i * symsize(Mo);
+    allR[i] = Rs + i * Mo*Mo;
+  }
+
+  double E1 = 0.0;
+  double E2 = 0.0;
+  double E  = E0+E1+E2;
+  vecset(symsize(Mo), oldD, 0.0);
+  int k = 0, l = 0;
+
+  while(k < maxit){
+
+    double oldE = E;
+    D_eq9(N/2, Mo, C, D);
+
+    if(k>=K1){
+      allF[k] = allF[k-K1];
+      allR[k] = allR[k-K1];
+      if(l==k-K1){
+        l++;
+      }
+    }
+
+    F_eq4_r(D, H, F, alo, mmmm, bo, m, qmd);
+    F2_8_7_14_15_6_r(D, Hmp, Fmp, X, FX, s, F2, alo, alv, pmmm, bo, bv, m, qmd);
+    dEdF_r(D, X, FX, s, Fmp, Dmp, alo, bo, bv, qmd);
+    Heff_r(Dmp, F, F2, allF[k], alo, alv, pmmm, bo, bv, m, qmd);
+
+    errormx(Mo, allR[k], allF[k], D);
+    addB(k, B, Mo, allR);
+    l = fcoef(k+1, l, cf, B);
+    lincomb(symsize(Mo), k+1-l, Feff, allF+l, cf);
+
+    E1 = E1_eq3_r(Mo, H, D, F);
+    E2 = E2_eq5_r(Mo, D, F2);
+    E  = E0+E1+E2;
+
+    double dD = Ddiff(Mo, D, D, oldD);
+    double dE = E-oldE;
+    double Rmax = vecabsmax(Mo*Mo, allR[k]);
+    if(fo) iter_diis_print(k, E, dE, dD, Rmax, fo);
+    if(dD < dDmax){
+      if(fo) fprintf(fo, "converged\n");
+      break;
+    }
+
+    diagF(Mo, 1, Feff, C, V);
+
+    k++;
+  }
+
+  if(fo) E012_print(E, E0, E1, E2, fo);
+
+  free(Fs);
+  free(Rs);
+  free(allF);
+  free(B);
+
+  free(oldD);
+  free(s);
+  free(F);
+  free(Fmp);
+  free(F2);
+  free(Feff);
+  free(FX);
+  free(X);
   return E;
 }
 

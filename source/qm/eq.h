@@ -7,15 +7,22 @@ double A(int l, int m1, int m2, axis * xyz);
 double A_full(int l, int m1, int m2, double z[3]);
 void distang(double * rij, axis * eu, mol * m);
 
-double E0_eq2(mol * m, qmdata * qmd);
-double E1_eq3(int Mo, double * H, double * Da, double * Db, double * Fa, double * Fb);
-double E2_eq5(int Mo, double * Da, double * Db, double * F2a, double * F2b);
+double E0_eq2  (mol * m, qmdata * qmd);
+double E1_eq3  (int Mo, double * H, double * Da, double * Db, double * Fa, double * Fb);
+double E1_eq3_r(int Mo, double * H, double * D, double * F);
+double E2_eq5  (int Mo, double * Da, double * Db, double * F2a, double * F2b);
+double E2_eq5_r(int Mo, double * D, double * F2);
 
-void F_eq4(double * Da, double * Db, double * H, double * Fa, double * Fb, int * alo, double * mmmm, basis * bo, mol * m, qmdata * qmd);
-void F2_eq6(int Mo, double * FaXa, double * FbXb, double * sa, double * sb, double * F2a, double * F2b);
-void X_eq7(double * Fa, double * Fb, double * Xa, double * Xb, basis * bo, basis * bv, qmdata * qmd);
-void FX(int Mo, int Mv, double * Fa, double * Fb, double * Xa, double * Xb, double * FaXa, double * FbXb);
-void F_eq8(double * Da, double * Db, double * H, double * Fa, double * Fb, int * alo, int * alv, double * pmmm, basis * bo, basis * bv, mol * m, qmdata * qmd);
+void F_eq4  (double * Da, double * Db, double * H, double * Fa, double * Fb, int * alo, double * mmmm, basis * bo, mol * m, qmdata * qmd);
+void F_eq4_r(double * D, double * H, double * F, int * alo, double * mmmm, basis * bo, mol * m, qmdata * qmd);
+void F2_eq6  (int Mo, double * FaXa, double * FbXb, double * sa, double * sb, double * F2a, double * F2b);
+void F2_eq6_r(int Mo, double * FX, double * s, double * F2);
+void X_eq7  (double * Fa, double * Fb, double * Xa, double * Xb, basis * bo, basis * bv, qmdata * qmd);
+void X_eq7_r(double * F, double * X, basis * bo, basis * bv, qmdata * qmd);
+void FX  (int Mo, int Mv, double * Fa, double * Fb, double * Xa, double * Xb, double * FaXa, double * FbXb);
+void FX_r(int Mo, int Mv, double * F, double * X, double * FX);
+void F_eq8  (double * Da, double * Db, double * H, double * Fa, double * Fb, int * alo, int * alv, double * pmmm, basis * bo, basis * bv, mol * m, qmdata * qmd);
+void F_eq8_r(double * D, double * H, double * F, int * alo, int * alv, double * pmmm, basis * bo, basis * bv, mol * m, qmdata * qmd);
 void D_eq9(int N, int M, double * C, double * D);
 void s_eq15(int Mv, double * X, double * s, int * alo, basis * bo, mol * m, qmdata * qmd);
 
@@ -70,8 +77,23 @@ static inline void F2_8_7_14_15_6(
   X_eq7  (Fmpa, Fmpb, Xa, Xb, bo, bv, qmd);
   s_eq15 (Mv, Xa, sa, alo, bo, m, qmd);
   s_eq15 (Mv, Xb, sb, alo, bo, m, qmd);
-  FX(Mo, Mv, Fmpa, Fmpb, Xa, Xb, FaXa, FbXb);
+  FX     (Mo, Mv, Fmpa, Fmpb, Xa, Xb, FaXa, FbXb);
   F2_eq6 (Mo, FaXa, FbXb, sa, sb, F2a, F2b);
+  return;
+}
+
+static inline void F2_8_7_14_15_6_r(
+    double * D, double * Hmp, double * Fmp,
+    double * X, double * FX, double * s, double * F2,
+    int * alo, int * alv, double * pmmm,
+    basis * bo, basis * bv, mol * m, qmdata * qmd){
+  int Mo = bo->M;
+  int Mv = bv->M;
+  F_eq8_r  (D, Hmp, Fmp, alo, alv, pmmm, bo, bv, m, qmd);
+  X_eq7_r  (Fmp, X, bo, bv, qmd);
+  s_eq15   (Mv, X, s, alo, bo, m, qmd);
+  FX_r     (Mo, Mv, Fmp, X, FX);
+  F2_eq6_r (Mo, FX, s, F2);
   return;
 }
 
@@ -82,11 +104,18 @@ void dEdF(double * Da, double * Db,
     double * Fmpa,  double * Fmpb,
     double * dEdFa, double * dEdFb,
     int    * alo, basis * bo, basis * bv, qmdata * qmd);
+void dEdF_r(double * D, double * X, double * FX,
+    double * s, double * Fmp, double * Dmp,
+    int * alo, basis * bo, basis * bv, qmdata * qmd);
 
 void Heff(double * dEdFa, double * dEdFb,
     double * Fa,  double * Fb,
     double * F2a, double * F2b,
     double * FA,  double * FB,
+    int * alo, int * alv, double * pmmm,
+    basis * bo, basis * bv, mol * m, qmdata * qmd);
+void Heff_r(double * Dmp,
+    double * F, double * F2, double * Feff,
     int * alo, int * alv, double * pmmm,
     basis * bo, basis * bv, mol * m, qmdata * qmd);
 

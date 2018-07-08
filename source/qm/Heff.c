@@ -203,3 +203,96 @@ void Heff_test(int Na, int Nb,
   return;
 }
 
+void dEdF_r(double * D, double * X, double * FX,
+    double * s, double * Fmp, double * Dmp,
+    int * alo, basis * bo, basis * bv, qmdata * qmd){
+
+  int Mo = bo->M;
+  int Mv = bv->M;
+  for(int u1=0; u1<Mo; u1++){
+    int lu1 = bo->l[u1];
+    int ku1 = bo->k[u1];
+    int bra = alo[ku1]+lu1*lu1;
+    int ket = alo[ku1]+(lu1+1)*(lu1+1);
+    double eu1 = qmd->fa [bo->Q[u1]*qmd->nLo+lu1];
+    double cu1 = 2.0/(1.0+2.0*lu1);
+    for(int a1=0; a1<Mv; a1++){
+      int a1u1 = a1*Mo+u1;
+      double ea1 = qmd->f2a[bv->Q[a1]*qmd->nLv+bv->l[a1]];
+      double s_u1a1 = s[u1]/(eu1-ea1);
+
+      double star1  = 0.0;
+      double star2X = 0.0;
+      double star2F = 0.0;
+
+      for(int v=0; v<Mo; v++){
+        int a1v = a1*Mo+v;
+        int i   = MPOSIF(u1,v);
+        star2X += D[i] * X[a1v] * s[v];
+        star2F += D[i] * Fmp[a1v];
+        for(int u=bra; u<ket; u++){ /* functions on atom ku1 with L==lu1 */
+          int vu  = v*Mo+u;
+          int vus = MPOSIF(u,v);
+          star1 += D[vus] * FX[vu];
+        }
+      }
+
+      Dmp[a1u1] = 2.0 * star2X + 2.0 * ( star2F - star1 * cu1*s[u1]*X[a1u1] ) * s_u1a1 ;
+    }
+  }
+  return;
+}
+
+void Heff_r(double * Dmp,
+    double * F, double * F2, double * Feff,
+    int * alo, int * alv, double * pmmm,
+    basis * bo, basis * bv, mol * m, qmdata * qmd){
+
+  int Mo = bo->M;
+  int Mv = bv->M;
+
+  for(int u1=0; u1<Mo; u1++){
+    int ku1 = bo->k[u1];
+
+    for(int v1=u1; v1<alo[ku1+1]; v1++){
+      double d = 0.0;
+      for(int a=0; a<Mv; a++){
+        int ka = bv->k[a];
+        if(ka==ku1){
+          continue;
+        }
+        for(int u=alo[ka]; u<alo[ka+1]; u++){
+          double R = R2(a,u,u1,v1,pmmm,bo,bv,m,qmd);
+          int au = a*Mo+u;
+          d += R * Dmp[au];
+        }
+      }
+      int i = mpos(u1,v1);
+      Feff[i] = F[i] + F2[i] + d;
+    }
+
+    for(int kv1=ku1+1; kv1<m->n; kv1++){
+      for(int v1=alo[kv1]; v1<alo[kv1+1]; v1++){
+        double dA = 0.0;
+        for(int a=alv[ku1]; a<alv[ku1+1]; a++){
+          for(int u=alo[kv1]; u<alo[kv1+1]; u++){
+            double R = R2(a,u1,v1,u,pmmm,bo,bv,m,qmd);
+            int au = a*Mo+u;
+            dA -= R * Dmp[au];
+          }
+        }
+        for(int a=alv[kv1]; a<alv[kv1+1]; a++){
+          for(int u=alo[ku1]; u<alo[ku1+1]; u++){
+            double R = R2(a,v1,u1,u,pmmm,bo,bv,m,qmd);
+            int au = a*Mo+u;
+            dA -= R * Dmp[au] ;
+          }
+        }
+        int i = mpos(u1,v1);
+        Feff[i] = F[i] + F2[i] + 0.25*dA;
+      }
+    }
+  }
+  return;
+}
+

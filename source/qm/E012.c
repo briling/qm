@@ -44,3 +44,29 @@ double E2_eq5(int Mo, double * Da, double * Db, double * F2a, double * F2b){
   return 2.0*E2;
 }
 
+double E1_eq3_r(int Mo, double * H, double * D, double * F){
+  double E1 = 0.0;
+  for(int u=0; u<Mo; u++){
+    int uu = mpos(u,u);
+    E1 += (H[uu]+F[uu]) * D[uu];
+    for(int v=u+1; v<Mo; v++){
+      int uv = mpos(u,v);
+      E1 += 2.0 * (H[uv]+F[uv]) * D[uv];
+    }
+  }
+  return E1;
+}
+
+double E2_eq5_r(int Mo, double * D, double * F2){
+  double E2 = 0.0;
+  for(int u=0; u<Mo; u++){
+    int uu = mpos(u,u);
+    E2 += F2[uu] * D[uu];
+    for(int v=u+1; v<Mo; v++){
+      int uv = mpos(u,v);
+      E2 += 2.0 * F2[uv] * D[uv];
+    }
+  }
+  return 2.0*E2;
+}
+
