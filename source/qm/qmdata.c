@@ -109,8 +109,8 @@ qmdata * qmdata_read(FILE * f){
   int Q, Lo,Lv,Lp, nLo,nLv,nLp;
 
   do{
-    while(fscanf(f, " %256[^$ ]", s) == 1);
-    if(fscanf(f, "%256[$A-z]", s) != 1){
+    while(fscanf(f, " %255[^$ ]", s) == 1);
+    if(fscanf(f, "%255[$A-z]", s) != 1){
       return NULL;
     }
   } while(strcmp(s, "$qmdata"));

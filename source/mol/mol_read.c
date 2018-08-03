@@ -134,16 +134,16 @@ mol * mol_read(FILE * f){
   mult = 1;
 
   do{
-    while (fscanf(f, " %256[^$ ]", s) == 1) {
+    while (fscanf(f, " %255[^$ ]", s) == 1) {
         #if 0
           fprintf(stderr, "%s\n", s);
         #endif
     }
-    if (fscanf(f, "%256[$A-z]", s) != 1){
+    if (fscanf(f, "%255[$A-z]", s) != 1){
       return NULL;
     }
   } while(strcmp(s, "$molecule"));
-  while (fscanf(f, " %256[^$ \n]", s) == 1) {
+  while (fscanf(f, " %255[^$ \n]", s) == 1) {
 #if 0
     fprintf(stderr, "%s\n", s);
 #endif
@@ -175,7 +175,7 @@ mol * mol_read(FILE * f){
   n = 0;
   c = 0;
 
-  while (fscanf(f, " $%256s", s) != 1){
+  while (fscanf(f, " $%255s", s) != 1){
     if (zcf == 0){
       if (fscanf(f, "%d%lf%lf%lf", &q, r, r+1, r+2) != 4){
         if ( fscanf(f, " %[^\n]", s) && strstr(s, "set")){
