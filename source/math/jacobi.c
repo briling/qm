@@ -78,15 +78,15 @@ void jacobi(double * a, double * b, double * d,
     }
     k++;
 #if 0
-    fprintf(stderr, "%d\telements < epsilon:\t%d/%d\n", k, r, R);
+    fprintf(stderr, "%u\telements < epsilon:\t%u/%u\n", k, r, R);
 #endif
   } while ( k<rot && r<R );
   time_sec = myutime()-time_sec;
   if (f){
     fprintf(f, "\n====== diagonalization ======\n");
     fprintf(f, "time          : %.2f s\n", time_sec);
-    fprintf(f, "iterations    : %d/%d\n", k-1, rot);
-    fprintf(f, "a_ij < epsilon: %d/%d\n\n", r, R);
+    fprintf(f, "iterations    : %u/%u\n", k-1, rot);
+    fprintf(f, "a_ij < epsilon: %u/%u\n\n", r, R);
     fflush(f);
   }
   return;

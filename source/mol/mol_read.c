@@ -178,7 +178,7 @@ mol * mol_read(FILE * f){
   while (fscanf(f, " $%255s", s) != 1){
     if (zcf == 0){
       if (fscanf(f, "%d%lf%lf%lf", &q, r, r+1, r+2) != 4){
-        if ( fscanf(f, " %[^\n]", s) && strstr(s, "set")){
+        if ( fscanf(f, " %255[^\n]", s) && strstr(s, "set")){
           continue;
         }
         goto hell;
@@ -219,7 +219,7 @@ mol * mol_read(FILE * f){
     fscanf(f, " mass = %lf", &mass);
 
     t[0] = 0;
-    fscanf(f, " type = %8s", t);
+    fscanf(f, " type = %7s", t);
 
     m->q[n]     = q;
     m->r[3*n]   = r[0];

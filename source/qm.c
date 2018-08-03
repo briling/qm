@@ -34,8 +34,8 @@ int main(int argc, char * argv[]){
     if( sscanf (argv[i], "conv:%lf",    &dDmax         ) ) { continue; }
     if( sscanf (argv[i], "it:%d,%d",    &maxit, &memit ) ) { continue; }
     if( sscanf (argv[i], "print:%d",    &print         ) ) { continue; }
-    if( sscanf (argv[i], "read:%s",     &vi            ) ) { continue; }
-    if( sscanf (argv[i], "write:%s",    &vo            ) ) { continue; }
+    if( sscanf (argv[i], "read:%255s",  &vi            ) ) { continue; }
+    if( sscanf (argv[i], "write:%255s", &vo            ) ) { continue; }
     if( sscanf (argv[i], "diis:%d",     &diis          ) ) { continue; }
     if( sscanf (argv[i], "restrict:%d", &rhf           ) ) { continue; }
     if( (ffield = sscanf (argv[i], "field: %lf,%lf,%lf", field, field+1, field+2))) { continue; }
