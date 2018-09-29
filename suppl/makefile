@@ -1,7 +1,5 @@
-all: A B
-A: A.c
-	gcc A.c -lm -o A
+all: B
 B: B.c
 	gcc B.c -lm -o B
 clean:
-	rm -f ./A ./B
+	rm -f ./B 
