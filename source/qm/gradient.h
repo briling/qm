@@ -16,6 +16,7 @@ void gradient_r(double * D, double * H, double * pmmm,
 void gradient_test(int Na, int Nb, double * Da, double * Db, double * Hmp, double * pmmm, int * alo, int * alv, basis * bo, basis * bv, mol * m, qmdata * qmd);
 
 void E0_eq2_grad(double * g, mol * m, qmdata * qmd);
+void E0_ext_grad(double field[3], double * g, double * Da, double * Db, int * alo, mol * m, qmdata * qmd);
 void f_eq25_mm_grad(double * g, double * Da, double * Db, int * alo, basis * bo, mol * m, qmdata * qmd);
 void f_eq25_mm_grad_r(double * g, double * D, int * alo, basis * bo, mol * m, qmdata * qmd);
 void R_mmmm_grad(double * g, double * Da, double * Db, int * alo, basis * bo, mol * m, qmdata * qmd);

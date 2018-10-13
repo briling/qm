@@ -224,10 +224,13 @@ int main(int argc, char * argv[]){
       double time_sec = myutime();
       double * g = malloc(m->n*3*sizeof(double));
       gradient_r(D, Hmp, pmmm, g, alo, alv, bo, bv, m, qmd);
-      g_print(m->n, g, "", stdout);
+      if(ffield){
+        E0_ext_grad(field, g, D, D, alo, m, qmd);
+      }
+      g_print(m->n, g, "", fo);
       free(g);
       time_sec = myutime()-time_sec;
-      fprintf(fo, "\nTIME: %.2lf sec  (%.2lf min)\n\n", time_sec, time_sec/60.0);
+      fprintf(fo, "TIME: %.2lf sec  (%.2lf min)\n\n", time_sec, time_sec/60.0);
     }
 
     free(C);
@@ -305,13 +308,16 @@ int main(int argc, char * argv[]){
       double time_sec = myutime();
       double * g = malloc(m->n*3*sizeof(double));
       gradient(Da, Db, Hmp, pmmm, g, alo, alv, bo, bv, m, qmd);
-      g_print(m->n, g, "", stdout);
+      if(ffield){
+        E0_ext_grad(field, g, Da, Db, alo, m, qmd);
+      }
+      g_print(m->n, g, "", fo);
       free(g);
       time_sec = myutime()-time_sec;
-      fprintf(fo, "\nTIME: %.2lf sec  (%.2lf min)\n\n", time_sec, time_sec/60.0);
+      fprintf(fo, "TIME: %.2lf sec  (%.2lf min)\n\n", time_sec, time_sec/60.0);
     }
 #if 0
-    gradient_test(Na, Nb, Da, Db, Hmp, pmmm, alo, alv, bo, bv, m, qmd);
+    gradient_test(Na, Nb, Da, Db, Hmp, pmmm, alo, alv, bo, bv, m, qmd); // without field
 #endif
 #if 0
     A_grad_test();
