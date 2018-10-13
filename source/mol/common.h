@@ -19,4 +19,5 @@
 #define fprintf_if(F, ...) if(F) fprintf(F, __VA_ARGS__);
 
 typedef char styp[8];
+void     g_print(int n, double * G, const char s[], FILE * f);
 

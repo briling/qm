@@ -1,6 +1,9 @@
 #include "qm_t.h"
 #include "mol.h"
 
+typedef enum {NIL, ENERGY, GRAD, TDHF, CIS, POLAR} task_t;
+typedef char s16[16];
+
 qmdata * qmdata_read  (FILE * f);
 void     qmdata_print (FILE * f, qmdata * qmd);
 

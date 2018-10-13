@@ -123,6 +123,26 @@ void mx_antisym(unsigned int n, double * a){
   return;
 }
 
+void mx_multmx(unsigned int m, unsigned int n, unsigned int q,
+               double * p, double * a, double * b){
+  /* a: m*n
+   * b: n*q
+   * p = ab: m*q
+   */
+  unsigned int i,j,k;
+  double t;
+  for(i=0; i<m; i++){
+    for(j=0; j<q; j++){
+      t = 0.0;
+      for(k=0; k<n; k++){
+        t += a[i*n+k] * b[k*q+j];
+      }
+      p[i*q+j] = t;
+    }
+  }
+  return;
+}
+
 void mx_multtrmx(unsigned int n, double * p, double * a, double * b){
   /* A*Bt */
   unsigned int i,j,k;

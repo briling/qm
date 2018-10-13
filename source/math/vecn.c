@@ -14,9 +14,9 @@ void veccp(size_t n, double * u, double * v){
   return;
 }
 
-void vecscal(size_t n, double * u, double s){
+void vecdiff(size_t n, double * w, double * u, double * v){
   for(size_t i=0; i<n; i++){
-    u[i] *= s;
+    w[i] = u[i]-v[i];
   }
   return;
 }
@@ -24,6 +24,20 @@ void vecscal(size_t n, double * u, double s){
 void vecsum(size_t n, double * w, double * u, double * v){
   for(size_t i=0; i<n; i++){
     w[i] = u[i]+v[i];
+  }
+  return;
+}
+
+void vecscal(size_t n, double * u, double s){
+  for(size_t i=0; i<n; i++){
+    u[i] *= s;
+  }
+  return;
+}
+
+void vecadd(size_t n, double * u, double * v){
+  for(size_t i=0; i<n; i++){
+    u[i] += v[i];
   }
   return;
 }

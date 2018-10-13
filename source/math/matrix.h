@@ -27,6 +27,7 @@ void     mx_transp      (unsigned int n, double * a);
 void     mx_transpcp    (unsigned int n, double * p, double * a);
 void     mx_antisym     (unsigned int n, double * a);
 
+void     mx_multmx      (unsigned int m, unsigned int n, unsigned int q, double * p, double * a, double * b);
 void     mx_multtrmx    (unsigned int n, double * p, double * a, double * b);
 double   mx_multtrmx_tr (unsigned int n, double * a, double * b);
 void     mx_symmultsymmx(unsigned int n, double * p, double * a, double * b);
