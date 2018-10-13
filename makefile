@@ -54,5 +54,5 @@ cleand :
 test :
 	bash test.bash
 
-include $(wildcard $(OBJDIR)/*.d)
+include $(wildcard $(OBJDIR)/*/*.d wildcard $(OBJDIR)/*.d)
 
