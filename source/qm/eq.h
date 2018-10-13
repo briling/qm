@@ -5,7 +5,7 @@
 
 double A(int l, int m1, int m2, axis * xyz);
 double A_full(int l, int m1, int m2, double z[3]);
-void distang(double * rij, axis * eu, mol * m);
+void distang(double * rij, axis * xyz, mol * m);
 
 double E0_eq2  (mol * m, qmdata * qmd);
 double E1_eq3  (int Mo, double * H, double * Da, double * Db, double * Fa, double * Fb);
@@ -55,7 +55,7 @@ void   Hmp_ext(double field[3], double * F, int * alo, int * alv, basis * bo, ba
 double F_eq47     (int fbi,  int lu,  int lv, int qu, int qv, double r, qmdata * qmd);
 double F_eq48     (int f1bi, int la,  int lv, int qa, int qv, double r, qmdata * qmd);
 double V_eq49_mm  (int ubi,  int lu,  int lv, int qu, int qk, double r, qmdata * qmd);
-double V_eq49_mp  (int ubi,  int lu,  int lv, int qu, int qk, double r, qmdata * qmd);
+double V_eq49_mp  (int u1bi, int lu,  int lv, int qu, int qk, double r, qmdata * qmd);
 double S_eq50     (int foi,  int lu,  int ld, int qu, int qd, double r, qmdata * qmd);
 double V_eq51     (int lu,   int lu1, int qu, int qk,  double r, qmdata * qmd);
 double G_eq52_mmmm(int m, int l, int l1, int lu, int lv, int lu1, int lv1, int qu, int qu1, double r, qmdata * qmd);

@@ -24,7 +24,7 @@ double scf(int Na, int Nb, double E0,
     double * H, double * Hmp, double * mmmm, double * pmmm,
     basis * bo, basis * bv, mol * m, qmdata * qmd, FILE * fo);
 double scf_r(int N, double E0,
-    double * Ca, double * Va, double * Da, double * Dmp,
+    double * C, double * V, double * D, double * Dmp,
     int maxit, double dDmax, int * alo, int * alv,
     double * H, double * Hmp, double * mmmm, double * pmmm,
     basis * bo, basis * bv, mol * m, qmdata * qmd, FILE * fo);

@@ -23,8 +23,8 @@ mol  * mol_read    (FILE * f);
 void   mol_print_m (mol  * m,  int bohr, const char s[], FILE * f);
 void   mol_print2  (mol  * m,  FILE * f);
 
-void eigensort(int M, double * d, double * c);
-int zmat2cart(int n, double * mr, double r[3], int a1, int a2, int a3, double ab, double ac, double az);
+void eigensort(int n, double * val, double * vec);
+int zmat2cart(int n,  double * mr,  double r[3], int a1, int a2,  int a3, double R, double phi, double theta);
 
 #endif
 
