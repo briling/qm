@@ -1,0 +1,20 @@
+$system mem=32 disk=-32 $end
+$control
+ task=gradient
+ theory=qm
+ basis=./qm_m.in
+$end
+$scf print=3 $end
+
+non-optimized structure
+$molecule
+ mult=2
+ unit=b
+ cartesian
+   6    -0.91309376   0.15948845   0.14521841
+   8     1.64189005   0.72950207   0.79566486
+   1    -1.96860238  -0.81106358   1.59845425
+   1    -1.30522092  -0.31336379  -1.80980728
+   1     2.54502701   0.23543685  -0.72953024
+$end
+

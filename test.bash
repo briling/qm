@@ -2,6 +2,8 @@ for i in mol/*.in ; do
   echo $i;
   if [[ $i = *'.field.'* ]]; then
     ./qm qm_m.in $i ${i/\.in/.x.out1} print:3 field:0.01,0.02,0.03;
+  elif [[ $i = *'.grad.'* ]]; then
+    ./qm qm_m.in $i ${i/\.in/.x.out1} print:3 task:grad;
   else
     ./qm qm_m.in $i ${i/\.in/.x.out1} print:3 ;
   fi
