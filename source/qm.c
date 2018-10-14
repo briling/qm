@@ -76,16 +76,23 @@ int main(int argc, char * argv[]){
   int Nu = m->mult-1;
   if( (N-Nu)%2 ) {
     fprintf(stderr, "\tN = %d, mult = %d !\n", N, m->mult);
+    free(m);
+    free(qmd);
+    fclose(fo);
     return 1;
   }
+
   int Nb = (N-Nu)/2;
   int Na = N-Nb;
   int Mo = norb(m, qmd->Lo);
   int Mv = norb(m, qmd->Lv);
-  basis * bo  = basis_fill(Mo, m, qmd->Lo);
-  basis * bv  = basis_fill(Mv, m, qmd->Lv);
-  int   * alo = basis_al(m, qmd->Lo);
-  int   * alv = basis_al(m, qmd->Lv);
+  if(Na>Mo){
+    fprintf(stderr, "\tNa = %d, Mo = %d !\n", Na, Mo);
+    free(m);
+    free(qmd);
+    fclose(fo);
+    return 1;
+  }
 
   fprintf(fo, "\n");
   fprintf(fo, "  N   = %d,", N);
@@ -94,6 +101,11 @@ int main(int argc, char * argv[]){
   fprintf(fo, "  Mo  = %d,", Mo);
   fprintf(fo, "  Mv  = %d\n", Mv);
   fprintf(fo, "\n");
+
+  basis * bo  = basis_fill(Mo, m, qmd->Lo);
+  basis * bv  = basis_fill(Mv, m, qmd->Lv);
+  int   * alo = basis_al(m, qmd->Lo);
+  int   * alv = basis_al(m, qmd->Lv);
 
   double time_sec = myutime();
 
