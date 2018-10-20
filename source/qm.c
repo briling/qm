@@ -4,6 +4,8 @@
 #include "2el.h"
 #include "tools.h"
 #include "mytime.h"
+#include "gradient.h"
+#include <ctype.h>
 
 #define print_def   1
 #define dDmax_def   1e-8
@@ -11,6 +13,24 @@
 #define memit_def   8
 #define diis_def    1
 #define rhf_def     1
+#define task_def    ENERGY
+
+static const s16 tasks_s[] = {
+  [NIL]    = "NIL",
+  [ENERGY] = "ENERGY",
+  [GRAD]   = "GRAD",
+  [TDHF]   = "TDHF",
+  [CIS]    = "CIS",
+  [POLAR]  = "POLAR"
+};
+
+static inline void str_toupper(char * s){
+  while(*s){
+    *s = toupper(*s);
+    s++;
+  }
+  return;
+}
 
 int main(int argc, char * argv[]){
 
@@ -29,6 +49,7 @@ int main(int argc, char * argv[]){
   char   vo[256]  = {0};
   int    ffield   =  0;
   double field[3] = {0};
+  char   task_s[256] = {0};
   FILE * fo = stdout;
   for(int i=3; i<argc; i++){
     if( sscanf (argv[i], "conv:%lf",    &dDmax         ) ) { continue; }
@@ -38,6 +59,7 @@ int main(int argc, char * argv[]){
     if( sscanf (argv[i], "write:%255s", &vo            ) ) { continue; }
     if( sscanf (argv[i], "diis:%d",     &diis          ) ) { continue; }
     if( sscanf (argv[i], "restrict:%d", &rhf           ) ) { continue; }
+    if( sscanf (argv[i], "task:%255s",  &task_s        ) ) { continue; }
     if( (ffield = sscanf (argv[i], "field: %lf,%lf,%lf", field, field+1, field+2))) { continue; }
     if(! (fo = fopen(argv[i], "w"))){
       fo = stdout;
@@ -48,13 +70,22 @@ int main(int argc, char * argv[]){
   }
   fprintf(fo, "\n"VERSION"\n");
   fprintf(fo, "conv:%e\n", dDmax);
-  fprintf(fo, "it:%d",     maxit);
+  fprintf(fo, "it:%d", maxit);
   if(diis){
-    fprintf(fo, ",%d",     memit);
+    fprintf(fo, ",%d", memit);
   }
   fprintf(fo,"\n");
   if(ffield){
     fprintf(fo, "field:%e,%e,%e\n", field[0], field[1], field[2]);
+  }
+
+  str_toupper(task_s);
+  task_t task = task_def;
+  for(task_t i=0; i<sizeof(tasks_s)/sizeof(tasks_s[0]); i++){
+    if(!strcmp(task_s, tasks_s[i])){
+      task = i;
+      break;
+    }
   }
 
   qmdata * qmd = qmdata_read(fp);
@@ -189,6 +220,19 @@ int main(int argc, char * argv[]){
     }
     fflush(fo);
 
+    if(task==GRAD){
+      double time_sec = myutime();
+      double * g = malloc(m->n*3*sizeof(double));
+      gradient_r(D, Hmp, pmmm, g, alo, alv, bo, bv, m, qmd);
+      if(ffield){
+        E0_ext_grad(field, g, D, D, alo, m, qmd);
+      }
+      g_print(m->n, g, "", fo);
+      free(g);
+      time_sec = myutime()-time_sec;
+      fprintf(fo, "TIME: %.2lf sec  (%.2lf min)\n\n", time_sec, time_sec/60.0);
+    }
+
     free(C);
     free(V);
     free(D);
@@ -260,6 +304,24 @@ int main(int argc, char * argv[]){
     Heff_test(Na, Nb, Ca, Cb, H, Hmp, alo, alv, mmmm, pmmm, bo, bv, m, qmd);
 #endif
 
+    if(task==GRAD){
+      double time_sec = myutime();
+      double * g = malloc(m->n*3*sizeof(double));
+      gradient(Da, Db, Hmp, pmmm, g, alo, alv, bo, bv, m, qmd);
+      if(ffield){
+        E0_ext_grad(field, g, Da, Db, alo, m, qmd);
+      }
+      g_print(m->n, g, "", fo);
+      free(g);
+      time_sec = myutime()-time_sec;
+      fprintf(fo, "TIME: %.2lf sec  (%.2lf min)\n\n", time_sec, time_sec/60.0);
+    }
+#if 0
+    gradient_test(Na, Nb, Da, Db, Hmp, pmmm, alo, alv, bo, bv, m, qmd); // without field
+#endif
+#if 0
+    A_grad_test();
+#endif
     free(Sab);
     free(Ca);
     free(Cb);

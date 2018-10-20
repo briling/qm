@@ -21,6 +21,7 @@ make test
 ./qm qm_m.in <molecule>.{in,out}
 ```
 #### command line options:
+* `task:%s`     - calculate energy (`energy`) or gradient (`grad`)
 * `conv:%lf`    – scf convergence criterion (rms change in density matrix)
 * `it:%d,%d`    – number of iterations / size of diis subspace
 * `print:%d`    – printing options (`1` – default, `2` – print scf vectors, `3` – print atomic charges and bond orders)

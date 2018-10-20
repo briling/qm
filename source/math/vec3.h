@@ -1,3 +1,4 @@
+#define r3print(X,F) fprintf(F, #X ": % 20.15lf % 20.15lf % 20.15lf\n", *(X), *((X)+1), *((X)+2));
 
 static inline void r3set (double * u, double s){
   u[0] = s;
@@ -58,6 +59,13 @@ static inline void r3min (double * u, double * v){
   return;
 }
 
+static inline void r3sum (double * w, double * u, double * v){
+  w[0] = u[0] + v[0];
+  w[1] = u[1] + v[1];
+  w[2] = u[2] + v[2];
+  return;
+}
+
 static inline void r3diff (double * w, double * u, double * v){
   w[0] = u[0] - v[0];
   w[1] = u[1] - v[1];
@@ -69,6 +77,13 @@ static inline void r3cp (double * u, double * v){
   u[0] = v[0];
   u[1] = v[1];
   u[2] = v[2];
+  return;
+}
+
+static inline void r3sums (double * w, double * u, double s, double * v, double t){
+  w[0] = u[0]*s + v[0]*t;
+  w[1] = u[1]*s + v[1]*t;
+  w[2] = u[2]*s + v[2]*t;
   return;
 }
 
