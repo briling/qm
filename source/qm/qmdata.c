@@ -4,6 +4,7 @@
 #include "matrix.h"
 #include "qm.h"
 
+#define END(X) ( qmd->X + (X##_size)/sizeof(*(qmd->X)) )
 #define CA_L_PRINT(F, Q, PAR, L) ca_l_print(Q, qmd->PAR, #PAR, qmd->L, qmd->n ## L, F);
 #define D_L_PRINT(F, Q, PAR, L) d_l_print(Q, qmd->PAR, #PAR, qmd->L, qmd->n ## L, F);
 
@@ -15,42 +16,58 @@ static qmdata * qmdata_alloc(int Qmax,
                              int Nfo,
                              int Nub, int Nu1b,
                              int Nvb){
+
   int N = Qmax + 1;
-  size_t size = sizeof(qmdata) +
-         N * sizeof(int) * (4+nLo)  +
-         N * sizeof(double)         +    // ea
-         N * sizeof(double) * nLo   +    // fa
-         N * sizeof(double) * nLv   +    // f2a
-         N * sizeof(double)         +    // r0
-         N * sizeof(double) * nLp   +    // cf
-         N * sizeof(ca_t)           +    // bub
-         N * sizeof(ca_t)           +    // bu1b
-         N * sizeof(ca_t)   * nLo   +    // aub
-         N * sizeof(ca_t)   * nLo   +    // au0b
-         N * sizeof(ca_t)   * nLv   +    // au1b
-         N * sizeof(ca_t)   * nLo   +    // afb
-         N * sizeof(ca_t)   * nLo   +    // af0b
-         N * sizeof(ca_t)   * nLv   +    // af1b
-         N * sizeof(ca_t)   * nLo   +    // afo
-         N * sizeof(ca_t)   * nLp   +    // aof
-         N * sizeof(double) * nLo   +    // agb
-         N * sizeof(double) * nLo   +    // ag0b
-         N * sizeof(double) * nLv   +    // ag1b
-         N * sizeof(ca_t)           +    // bvb
-         N * sizeof(ca_t)   * nLo   +    // avb
-         N * sizeof(ca_t)   * nLo   +    // ag6
-         N * sizeof(ql_t)           +    // q_list
-         Nga  * sizeof(ga_t)        +    // ga
-         Nqa  * sizeof(qa_t)        +    // qa
-         Nq1a * sizeof(qa_t)        +    // q1a
-         symsize(N) * sizeof(qql_t) +    // qq_list
-         Nfb   * sizeof(cabm_t)     +    // fb
-         Nf1b  * sizeof(cabm_t)     +    // f1b
-         Nfo   * sizeof(cabm_t)     +    // fo
-         Nub   * sizeof(cabl_t)     +    // ub
-         Nu1b  * sizeof(cabl_t)     +    // u1b
-         Nvb   * sizeof(cablm_t)    +    // vb
-         0;
+
+  int used_size = N * sizeof(int);
+  int Lo_size   = N * sizeof(int);
+  int Lv_size   = N * sizeof(int);
+  int Lp_size   = N * sizeof(int);
+  int p_size    = N * sizeof(int) * nLo;
+
+  int ea_size      = N * sizeof(double)        ;
+  int fa_size      = N * sizeof(double) * nLo  ;
+  int f2a_size     = N * sizeof(double) * nLv  ;
+  int r0_size      = N * sizeof(double)        ;
+  int cf_size      = N * sizeof(double) * nLp  ;
+  int bub_size     = N * sizeof(ca_t)          ;
+  int bu1b_size    = N * sizeof(ca_t)          ;
+  int aub_size     = N * sizeof(ca_t)   * nLo  ;
+  int au0b_size    = N * sizeof(ca_t)   * nLo  ;
+  int au1b_size    = N * sizeof(ca_t)   * nLv  ;
+  int afb_size     = N * sizeof(ca_t)   * nLo  ;
+  int af0b_size    = N * sizeof(ca_t)   * nLo  ;
+  int af1b_size    = N * sizeof(ca_t)   * nLv  ;
+  int afo_size     = N * sizeof(ca_t)   * nLo  ;
+  int aof_size     = N * sizeof(ca_t)   * nLp  ;
+  int agb_size     = N * sizeof(double) * nLo  ;
+  int ag0b_size    = N * sizeof(double) * nLo  ;
+  int ag1b_size    = N * sizeof(double) * nLv  ;
+  int bvb_size     = N * sizeof(ca_t)          ;
+  int avb_size     = N * sizeof(ca_t)   * nLo  ;
+  int ag6_size     = N * sizeof(ca_t)   * nLo  ;
+  int q_list_size  = N * sizeof(ql_t)          ;
+  int ga_size      = Nga  * sizeof(ga_t)       ;
+  int qa_size      = Nqa  * sizeof(qa_t)       ;
+  int q1a_size     = Nq1a * sizeof(qa_t)       ;
+  int qq_list_size = symsize(N) * sizeof(qql_t);
+  int fb_size      = Nfb   * sizeof(cabm_t)    ;
+  int f1b_size     = Nf1b  * sizeof(cabm_t)    ;
+  int fo_size      = Nfo   * sizeof(cabm_t)    ;
+  int ub_size      = Nub   * sizeof(cabl_t)    ;
+  int u1b_size     = Nu1b  * sizeof(cabl_t)    ;
+  int vb_size      = Nvb   * sizeof(cablm_t)   ;
+
+  size_t size = sizeof(qmdata)  + p_size +
+    used_size    + Lo_size      + Lv_size      + Lp_size      +
+    ea_size      + fa_size      + f2a_size     + r0_size      +
+    cf_size      + bub_size     + bu1b_size    + aub_size     +
+    au0b_size    + au1b_size    + afb_size     + af0b_size    +
+    af1b_size    + afo_size     + aof_size     + agb_size     +
+    ag0b_size    + ag1b_size    + bvb_size     + avb_size     +
+    ag6_size     + q_list_size  + ga_size      + qa_size      +
+    q1a_size     + qq_list_size + fb_size      + f1b_size     +
+    fo_size      + ub_size      + u1b_size     + vb_size      ;
 
   qmdata * qmd  = calloc(1, size);
   if(!qmd){
@@ -60,43 +77,46 @@ static qmdata * qmdata_alloc(int Qmax,
   qmd->nLo     = nLo;
   qmd->nLv     = nLv;
   qmd->nLp     = nLp;
-  qmd->used    = (int *)(qmd + 1);
-  qmd->Lo      = qmd->used + N;
-  qmd->Lv      = qmd->Lo   + N;
-  qmd->Lp      = qmd->Lv   + N;
-  qmd->p       = qmd->Lp   + N;
-  qmd->ea      = (double *)(qmd->p + N*nLo);
-  qmd->fa      = qmd->ea     + N;
-  qmd->f2a     = qmd->fa     + N * nLo;
-  qmd->r0      = qmd->f2a    + N * nLv;
-  qmd->cf      = qmd->r0     + N;
-  qmd->bub     = (ca_t *)(qmd->cf + N * nLp);
-  qmd->bu1b    = qmd->bub    + N;
-  qmd->aub     = qmd->bu1b   + N;
-  qmd->au0b    = qmd->aub    + N * nLo;
-  qmd->au1b    = qmd->au0b   + N * nLo;
-  qmd->afb     = qmd->au1b   + N * nLv;
-  qmd->af0b    = qmd->afb    + N * nLo;
-  qmd->af1b    = qmd->af0b   + N * nLo;
-  qmd->afo     = qmd->af1b   + N * nLv;
-  qmd->aof     = qmd->afo    + N * nLo;
-  qmd->agb     = (double *)(qmd->aof + N * nLp);
-  qmd->ag0b    = qmd->agb    + N * nLo;
-  qmd->ag1b    = qmd->ag0b   + N * nLo;
-  qmd->bvb     = (ca_t *)(qmd->ag1b + N * nLv);
-  qmd->avb     = qmd->bvb    + N;
-  qmd->ag6     = qmd->avb    + N * nLo;
-  qmd->q_list  = (ql_t *)(qmd->ag6 + N * nLo);
-  qmd->ga      = (ga_t *)(qmd->q_list + N);
-  qmd->qa      = (qa_t *)(qmd->ga + Nga);
-  qmd->q1a     = qmd->qa  + Nqa;
-  qmd->qq_list = (qql_t *)(qmd->q1a + Nq1a);
-  qmd->fb      = (cabm_t *)(qmd->qq_list + symsize(N));
-  qmd->f1b     = qmd->fb + Nfb;
-  qmd->fo      = qmd->f1b +Nf1b;
-  qmd->ub      = (cabl_t *)(qmd->fo + Nfo);
-  qmd->u1b     = qmd->ub + Nub;
-  qmd->vb      = (cablm_t *)(qmd->u1b+Nu1b);
+
+  qmd->ea      = (double *)(qmd + 1);
+  qmd->fa      = END(ea  );
+  qmd->f2a     = END(fa  );
+  qmd->r0      = END(f2a );
+  qmd->cf      = END(r0  );
+  qmd->agb     = END(cf  );
+  qmd->ag0b    = END(agb );
+  qmd->ag1b    = END(ag0b);
+
+  qmd->bub     = (ca_t *)END(ag1b);
+  qmd->bu1b    = END(bub );
+  qmd->aub     = END(bu1b);
+  qmd->au0b    = END(aub );
+  qmd->au1b    = END(au0b);
+  qmd->afb     = END(au1b);
+  qmd->af0b    = END(afb );
+  qmd->af1b    = END(af0b);
+  qmd->afo     = END(af1b);
+  qmd->aof     = END(afo );
+  qmd->bvb     = END(aof );
+  qmd->avb     = END(bvb );
+  qmd->ag6     = END(avb );
+  qmd->fb      = (cabm_t *)END(ag6);
+  qmd->f1b     = END(fb );
+  qmd->fo      = END(f1b);
+  qmd->ub      = (cabl_t *)END(fo);
+  qmd->u1b     = END(ub);
+  qmd->vb      = (cablm_t *)END(u1b);
+  qmd->ga      = (ga_t *)END(vb);
+  qmd->qa      = (qa_t *)END(ga);
+  qmd->q1a     = END(qa);
+
+  qmd->qq_list = (qql_t *)END(q1a);
+  qmd->q_list  = (ql_t *)END(qq_list);
+  qmd->used    = (int *)END(q_list);
+  qmd->Lo      = END(used);
+  qmd->Lv      = END(Lo);
+  qmd->Lp      = END(Lv);
+  qmd->p       = END(Lp);
 
   return qmd;
 }

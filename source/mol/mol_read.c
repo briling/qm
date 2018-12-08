@@ -4,103 +4,101 @@
 #define N 2
 #define C 8
 
+#define END(S,X) ( (S)->X + (X##_size)/sizeof(*((S)->X)) )
+
+static mol * mol_alloc(mol * mold, int n, int c){
+
+  int q_size = sizeof(int    ) * n     ;
+  int m_size = sizeof(double ) * n     ;
+  int s_size = sizeof(styp   ) * n     ;
+  int r_size = sizeof(double ) * n * 3 ;
+  int l_size = sizeof(int    ) *(n + 1);
+  int k_size = sizeof(int    ) * c     ;
+  int b_size = sizeof(int    ) * c     ;
+  int size   = sizeof(mol) + q_size + m_size + s_size + r_size + l_size + k_size + b_size;
+
+  mol * m = realloc(mold, size);
+  if(!m){
+    GOTOHELL;
+  }
+
+  m->n = n;
+  m->c = c;
+
+  m->r = (double *) (m + 1);
+  m->m = (double *) END(m,r);
+  m->q = (int    *) END(m,m);
+  m->k = (int    *) END(m,q);
+  m->b = (int    *) END(m,k);
+  m->l = (int    *) END(m,b);
+  m->s = (styp   *) END(m,l);
+  return m;
+}
+
 static mol * redm(mol * m){
 
   int n = m->n;
   int c = m->c;
 
-  int size = sizeof(mol    )         +
-             sizeof(int    ) * n     + // q
-             sizeof(double ) * n     + // m
-             sizeof(styp   ) * n     + // s
-             sizeof(double ) * n * 3 + // r
-             sizeof(int    ) *(n + 1)+ // l
-             sizeof(int    ) * c     + // k
-             sizeof(int    ) * c     ; // b
+  int q_size = sizeof(int    ) * n     ;
+  int m_size = sizeof(double ) * n     ;
+  int s_size = sizeof(styp   ) * n     ;
+  int r_size = sizeof(double ) * n * 3 ;
+  int l_size = sizeof(int    ) *(n + 1);
+  int k_size = sizeof(int    ) * c     ;
+  int b_size = sizeof(int    ) * c     ;
 
-  mol * tm = malloc(size);
+  mol * tm = mol_alloc(NULL, n, c);
 
-  tm->n = n;
-  tm->c = c;
-  tm->s = (styp   *)(tm    + 1    );
-  tm->q = (int    *)(tm->s + n    );
-  tm->m = (double *)(tm->q + n    );
-  tm->r = (double *)(tm->m + n    );
-  tm->l = (int    *)(tm->r + n * 3);
-  tm->k = (int    *)(tm->l + n + 1);
-  tm->b = (int    *)(tm->k + c    );
-
-  memmove(tm->s, m->s, sizeof(styp  )*n    );
-  memmove(tm->q, m->q, sizeof(int   )*n    );
-  memmove(tm->m, m->m, sizeof(double)*n    );
-  memmove(tm->r, m->r, sizeof(double)*n * 3);
-  memmove(tm->l, m->l, sizeof(int   )*(n+1));
-  memmove(tm->k, m->k, sizeof(int   )*c    );
-  memmove(tm->b, m->b, sizeof(int   )*c    );
+  memmove(tm->s, m->s, s_size);
+  memmove(tm->q, m->q, q_size);
+  memmove(tm->m, m->m, m_size);
+  memmove(tm->r, m->r, r_size);
+  memmove(tm->l, m->l, l_size);
+  memmove(tm->k, m->k, k_size);
+  memmove(tm->b, m->b, b_size);
 
   free(m);
   return tm;
-
 }
 
 static mol * expm(mol * m){
 
   int so = m->n;
-  int sn;
-  if (so == 0){
-    sn = N;
-  }
-  else{
-    sn = 2*so;
-  }
+  int sn = so ? 2*so : N;
   m->n = sn;
 
   int zo = m->c;
-  int zn;
-  if (zo == 0){
-    zn = C;
-  }
-  else{
-    zn = 2*zo;
-  }
+  int zn = zo ? 2*zo : C;
   m->c = zn;
 
-  int size = sizeof(mol    )          +
-             sizeof(int    ) * sn     + // q
-             sizeof(double ) * sn     + // m
-             sizeof(styp   ) * sn     + // s
-             sizeof(double ) * sn * 3 + // r
-             sizeof(int    ) *(sn + 1)+ // l
-             sizeof(int    ) * zn     + // k
-             sizeof(int    ) * zn     ; // b
+  m = mol_alloc(m, sn, zn);
 
-  m = realloc (m, size );
-  m->s = (styp   *)(m    +  1  );
-  m->q = (int    *)(m->s + sn  );
-  m->m = (double *)(m->q + sn  );
-  m->r = (double *)(m->m + sn  );
-  m->l = (int    *)(m->r + sn*3);
-  m->k = (int    *)(m->l + sn+1);
-  m->b = (int    *)(m->k + zn  );
+  int q_size = sizeof(int    ) * so     ;
+  int m_size = sizeof(double ) * so     ;
+  int s_size = sizeof(styp   ) * so     ;
+  int r_size = sizeof(double ) * so * 3 ;
+  int l_size = sizeof(int    ) *(so + 1);
+  int k_size = sizeof(int    ) * zo    ;
+  int b_size = sizeof(int    ) * zo    ;
 
   mol tm;
-  tm.s = (styp   *)(m    +  1  );
-  tm.q = (int    *)(tm.s + so  );
-  tm.m = (double *)(tm.q + so  );
-  tm.r = (double *)(tm.m + so  );
-  tm.l = (int    *)(tm.r + so*3);
-  tm.k = (int    *)(tm.l + so+1);
-  tm.b = (int    *)(tm.k + zo  );
+  tm.r = (double *) (m + 1);
+  tm.m = (double *) END(&tm,r);
+  tm.q = (int    *) END(&tm,m);
+  tm.k = (int    *) END(&tm,q);
+  tm.b = (int    *) END(&tm,k);
+  tm.l = (int    *) END(&tm,b);
+  tm.s = (styp   *) END(&tm,l);
 
-  memmove(m->b, tm.b, sizeof(int   )* zo   );
-  memmove(m->k, tm.k, sizeof(int   )* zo   );
-  memmove(m->l, tm.l, sizeof(int   )*(so+1));
-  memmove(m->r, tm.r, sizeof(double)* so*3 );
-  memmove(m->m, tm.m, sizeof(double)* so   );
-  memmove(m->q, tm.q, sizeof(int   )* so   );
+  memmove(m->s, tm.s, s_size);
+  memmove(m->l, tm.l, l_size);
+  memmove(m->b, tm.b, b_size);
+  memmove(m->k, tm.k, k_size);
+  memmove(m->q, tm.q, q_size);
+  memmove(m->m, tm.m, m_size);
 
   return m;
-
 }
 
 static int chckm(mol * m){
@@ -168,8 +166,7 @@ mol * mol_read(FILE * f){
     }
   }
 
-  m = malloc(sizeof(mol));
-  m = memset(m, 0, sizeof(mol));
+  m = calloc(sizeof(mol), 1);
   m = expm(m);
 
   n = 0;
