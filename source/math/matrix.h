@@ -24,7 +24,6 @@ double * mx_read        (unsigned int n, FILE   * f);
 double * mx_sym_read    (unsigned int n, FILE   * f);
 
 void     mx_transp      (unsigned int n, double * a);
-void     mx_transpcp    (unsigned int n, double * p, double * a);
 void     mx_antisym     (unsigned int n, double * a);
 
 void     mx_multmx      (unsigned int m, unsigned int n, unsigned int q, double * p, double * a, double * b);

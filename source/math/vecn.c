@@ -14,13 +14,6 @@ void veccp(size_t n, double * u, double * v){
   return;
 }
 
-void vecdiff(size_t n, double * w, double * u, double * v){
-  for(size_t i=0; i<n; i++){
-    w[i] = u[i]-v[i];
-  }
-  return;
-}
-
 void vecsum(size_t n, double * w, double * u, double * v){
   for(size_t i=0; i<n; i++){
     w[i] = u[i]+v[i];

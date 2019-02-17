@@ -5,9 +5,7 @@
 
 double A(int l, int m1, int m2, axis * xyz);
 double A_full(int l, int m1, int m2, double z[3]);
-double A_old(int l, int m1, int m2, double z[3]);
 double A_grad_z(int l, int m1, int m2, double g[3], double z[3]);
-void A_grad_z_old(int l, int m1, int m2, double g[3], double z[3]);
 void A_grad_z2r(double g[3], double z[3], double r1);
 void A_grad_test();
 void distang(double * rij, axis * xyz, mol * m);

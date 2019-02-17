@@ -1,6 +1,6 @@
 #include "mol.h"
 #include "vec3.h"
-#include "matrix.h"
+#include "vecn.h"
 
 #define EPS 1e-15
 

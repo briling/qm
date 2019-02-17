@@ -99,16 +99,6 @@ void mx_transp(unsigned int n, double * a){
   return;
 }
 
-void mx_transpcp (unsigned int   n, double * p, double * a){
-  unsigned int i,j;
-  for(i=0; i<n; i++){
-    for(j=0; j<n; j++){
-      p[j*n+i] = a[i*n+j];
-    }
-  }
-  return;
-}
-
 void mx_antisym(unsigned int n, double * a){
   unsigned int i,j;
   double t;
