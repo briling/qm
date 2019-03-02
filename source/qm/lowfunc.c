@@ -36,10 +36,9 @@ double B(int l1, int l2, int l3, int m1, int m2, int m3){
   }
 
   int t;
-  if (l2 > l1) { SWAP(l1, l2, t); SWAP(m1, m2, t);}
-  if (l3 > l2) { SWAP(l2, l3, t); SWAP(m2, m3, t);}
-  if (l2 > l1) { SWAP(l1, l2, t); SWAP(m1, m2, t);}
-  if (l3 > l2) { SWAP(l2, l3, t); SWAP(m2, m3, t);}
+  if (l2 > l1) { SWAP(l1, l2, t); SWAP(m1, m2, t); }
+  if (l3 > l1) { SWAP(l1, l3, t); SWAP(m1, m3, t); }
+  if (l3 > l2) { SWAP(l2, l3, t); SWAP(m2, m3, t); }
 
 #include "B.h"
   abort();
