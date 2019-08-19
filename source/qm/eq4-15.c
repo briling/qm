@@ -177,27 +177,20 @@ void F_eq8(double * Da, double * Db,
 
 void s_eq15(int Mv, double * X, double * s, int * alo, basis * bo, mol * m, qmdata * qmd){
   int Mo = bo->M;
-  // eq14:
-  for(int u=0; u<Mo; u++){
-    double t = 1.0;
-    for(int a=0; a<Mv; a++){
-      double x = X[a*Mo+u];
-      t += x*x;
-    }
-    s[u] = t;
-  }
-  // eq15:
   for(int ku=0; ku<m->n; ku++){
     int q = m->q[ku];
     int l = qmd->Lo[q];
     for(int lu=0; lu<=l; lu++){
       double t = 0.0;
-      int bra = alo[ku] +  lu   * lu;
+      int bra = alo[ku] + lu * lu;
       int ket = alo[ku] + (lu+1)*(lu+1);
-      for(int v=bra; v<ket; v++){  /* functions on atom ku with L==lu */
-        t += s[v];
+      for(int v=bra; v<ket; v++){ /* functions on atom ku with L==lu */
+        for(int a=0; a<Mv; a++){
+          double x = X[a*Mo+v];
+          t += x*x;
+        }
       }
-      t = (1.0+2.0*lu) / t;
+      t = (1.0+2.0*lu) / (1.0+2.0*lu + t); /* ( 1 + t/(1+2*lu) )^{-1} */
       for(int v=bra; v<ket; v++){
         s[v] = t;
       }
