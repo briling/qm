@@ -20,8 +20,8 @@ make test
 ```
 ./qm qm_m.in <molecule>.{in,out}
 ```
-#### command line options:
-* `task:%s`     - calculate energy (`energy`) or gradient (`grad`)
+#### command-line options:
+* `task:%s`     – calculate energy (`energy`) or gradient (`grad`)
 * `conv:%lf`    – scf convergence criterion (rms change in density matrix)
 * `it:%d,%d`    – number of iterations / size of diis subspace
 * `print:%d`    – printing options (`1` – default, `2` – print scf vectors, `3` – print atomic charges and bond orders)
@@ -42,10 +42,10 @@ the file with the set of parameters
 `mol/*.in`  –
 input files with molecular geometries,
 the format is described in `README` \[[1a]\].
-Our program reads the section `$molecule` only.
+My program reads the section `$molecule` only.
 
 `mol/*.x.out`  –
-corresponding output files from our program.
+corresponding output files from my program.
 
 `mol/*.p11.out` –
 corresponding output files from Priroda-11
