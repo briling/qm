@@ -29,7 +29,7 @@ make test
 * `write:%s`    – file name for saving scf vectors
 * `diis:%d`     – scf algorithm (`0` – straightforward procedure, `1` – diis (default))
 * `restrict:%d` – if the system has an even number of electrons, use `0` – spin-unrestricted or `1` – spin-restricted orbitals
-* `field:%lf,%lf,%lf` – applied electric field (with the opposite sign), i.e. <img src="http://latex.codecogs.com/svg.latex?\inline&space;\dpi{300}&space;-\vec&space;E\equiv\nabla\phi" title="-\vec E\equiv\nabla\phi\equiv\nabla\phi" height="22" />
+* `field:%lf,%lf,%lf` – applied electric field (with the opposite sign), i.e. $-\vec E\equiv\nabla\phi$
 
 ---
 
